@@ -15,6 +15,7 @@ public class TableOfMgr extends JFrame {
   public TableOfMgr() {
     setLayout(new GridLayout(2, 1));
     setSize(800, 600);
+    setResizable(false);
     setVisible(true);
     setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -31,7 +32,8 @@ public class TableOfMgr extends JFrame {
   class BackButtonListener implements ActionListener{
     public void actionPerformed(ActionEvent e){
       if (e.getSource()==backButton){
-        setVisible(false);
+//        setVisible(false);
+        dispose();
       }
     }
   }

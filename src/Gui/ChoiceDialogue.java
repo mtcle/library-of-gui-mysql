@@ -39,6 +39,7 @@ public class ChoiceDialogue extends JFrame {
     setTitle("图书检索系统");
     setLayout(new GridLayout(3, 1));
     setSize(800, 600);
+    setResizable(false);
     setVisible(true);
     setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -87,7 +88,6 @@ public class ChoiceDialogue extends JFrame {
               DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
                   "root", "121126");
 //          System.out.println("连接成功！");
-
           Statement statement0 = connection.createStatement();
           ResultSet getpass;
           getpass =
@@ -97,7 +97,6 @@ public class ChoiceDialogue extends JFrame {
             i = getpass.getInt(1);
           }
           i++;
-
           Statement statement3 = connection.createStatement();
           ResultSet getname;
           getname = statement3.executeQuery("select name from book where bookid='" + id + "'");
@@ -105,16 +104,11 @@ public class ChoiceDialogue extends JFrame {
           while (getname.next()) {
             bookname = getname.getString(1);
           }
-
-
-
           Statement statement = connection.createStatement();
           statement.execute("update book set status=1,checkoutsum='" + i + "'  where bookid='" + id
               + "'");
           Date tempdate = new Date();
           SimpleDateFormat timeformat = new SimpleDateFormat("yyyy-MM-dd");// 格式化时间输出
-
-          // statement.execute("insert record (bookid,bookname,userid,checkout,checkin,plan,rent,fajin)value('"+id+"','"+bookname+"','"+username+"','"+timeformat.format(checkOutTime)+"','"+timeformat.format(checkInTime)+"','"+timeformat.format(checkInTime+30*24*60*60*1000)+"','"+totalPrice+"','"+totalfajin+"')");
           statement
               .execute("insert record (bookid,bookname,userid,checkout,checkin,plan,rent,fajin)value('"
                   + id
@@ -131,8 +125,8 @@ public class ChoiceDialogue extends JFrame {
           connection.close();
 //          System.out.println("连接关闭！");
         } catch (SQLException e1) {
-          System.out.println("sql wrong!");
-          e1.printStackTrace();
+          JOptionPane.showMessageDialog(null, "sql错误", "提示", 2);
+//          e1.printStackTrace();
         }
       }
     }

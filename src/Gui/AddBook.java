@@ -126,7 +126,7 @@ public class AddBook extends JFrame {
     int xCoordinate = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
     int yCoordinate = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
     setLocation((int) (xCoordinate - 550) / 2, (int) (yCoordinate - 400) / 2);
-
+    setResizable(false);
     // setLocationRelativeTo(null);
     setSize(550, 400);
     setTitle("添加图书");

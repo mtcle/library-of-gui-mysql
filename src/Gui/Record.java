@@ -65,8 +65,7 @@ public class Record extends JFrame {
       connection.close();
       // System.out.println("连接关闭！");
     } catch (SQLException e1) {
-      System.out.println("sql wrong!");
-      // e1.printStackTrace();
+      JOptionPane.showMessageDialog(null, "服务器错误！", "提示", 2);
     }
     temprecordid = temp;
     final JComboBox<String> bookname = new JComboBox<>(temp);
@@ -124,31 +123,27 @@ public class Record extends JFrame {
           Statement statement1 = connection.createStatement();
           ResultSet get;
           get =
-              statement1.executeQuery("select count(*) from record where userid='"
-                  + Login.username + "'");
+              statement1.executeQuery("select count(*) from record where userid='" + Login.username
+                  + "'");
           while (get.next()) {
             aa = get.getInt(1);
           }
           Statement statement = connection.createStatement();
           ResultSet getpass;
           getpass =
-              statement.executeQuery("select * from record where userid='"
-                  + Login.username + "'");
+              statement.executeQuery("select * from record where userid='" + Login.username + "'");
           String[][] temp3 = new String[aa][9];
           int j = 0;
           while (getpass.next()) {
             for (int i = 0; i < 9; i++) {
               temp3[j][i] = getpass.getString(i + 1);
-              // System.out.println("pass"+temp3[j][i]);
             }
             j++;
           }
           record = temp3;
           connection.close();
-          // System.out.println("连接关闭！");
         } catch (SQLException e1) {
-          System.out.println("sql wrong!");
-          // e1.printStackTrace();
+          JOptionPane.showMessageDialog(null, "服务器错误！", "提示", 2);
         }
         if (aa > 0) {
           ViewOfRecord temp = new ViewOfRecord();
@@ -181,7 +176,6 @@ public class Record extends JFrame {
           while (getpass.next()) {
             for (int i = 0; i < 9; i++) {
               temp3[j][i] = getpass.getString(i + 1);
-              // System.out.println("pass"+temp3[j][i]);
             }
             j++;
           }
@@ -189,8 +183,7 @@ public class Record extends JFrame {
           connection.close();
           // System.out.println("连接关闭！");
         } catch (SQLException e1) {
-          System.out.println("sql wrong!");
-          // e1.printStackTrace();
+          JOptionPane.showMessageDialog(null, "服务器错误！", "提示", 2);
         }
         if (aa > 0) {
           ViewOfRecord temp = new ViewOfRecord();

@@ -146,13 +146,13 @@ public class Login extends JFrame {
           JOptionPane.showMessageDialog(null, "服务器错误！", "提示", 2);
           // e1.printStackTrace();
         }
-        // frame.adduser.setVisible(false);//本阶段是为了测试方便
-        // frame.addBook.setVisible(false);
-        // frame.changePass.setVisible(false);
-        // frame.checkOut.setVisible(false);
-        // frame.checkIn.setVisible(false);
-        // frame.record.setVisible(false);
-        // frame.delete.setVisible(false);//运行时注释回来
+        // frame.adduser.setEnabled(false);//本阶段是为了测试方便
+        // frame.addBook.setEnabled(false);
+        // frame.changePass.setEnabled(false);
+        // frame.checkOut.setEnabled(false);
+        // frame.checkIn.setEnabled(false);
+        // frame.record.setEnabled(false);
+        // frame.delete.setEnabled(false);//运行时注释回来
       } else {// vip login
         String vippasstemp = null;// 用户密码
         String name = jtext.getText();
@@ -182,10 +182,10 @@ public class Login extends JFrame {
             frame = new MainGui();
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
-            frame.adduser.setVisible(false);
-            frame.addBook.setVisible(false);
-            frame.delete.setVisible(false);
-            frame.managebook.setVisible(false);
+            frame.adduser.setEnabled(false);
+            frame.addBook.setEnabled(false);
+            frame.delete.setEnabled(false);
+            frame.managebook.setEnabled(false);
           } catch (ClassNotFoundException e1) {
             JOptionPane.showMessageDialog(null, "服务器连接失败！", "wraning", 2);
           }

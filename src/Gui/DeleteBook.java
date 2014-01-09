@@ -36,6 +36,7 @@ public class DeleteBook extends JFrame {
     setLayout(new GridLayout(2, 1));
     setSize(600, 400);
     setVisible(true);
+    setResizable(false);
     setTitle("图书清理平台 只显示在馆图书");
     setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -73,7 +74,6 @@ public class DeleteBook extends JFrame {
         int choice = jtable.getSelectedRow();
         if (choice != -1) {
           id = (String) booklist[choice][0];
-          System.out.println(id);// 得到了选择续借的id
         }
       }
     });
@@ -98,13 +98,14 @@ public class DeleteBook extends JFrame {
           Statement statement = connection.createStatement();
           statement.execute("delete from book where bookid='" + id + "'");
           JOptionPane.showMessageDialog(null, "删除成功", "提示", 1);
-          repaint();
+          dispose();
+          DeleteBook a = new DeleteBook();
+          a.viewTable();
           connection.close();
         } catch (SQLException e1) {
           JOptionPane.showMessageDialog(null, "服务器异常！", "提示", 1);
           e1.printStackTrace();
-        }
-
+        } catch (ClassNotFoundException e1) {}
       }
     }
   }

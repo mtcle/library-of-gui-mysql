@@ -30,7 +30,7 @@ public class AddUser {
       // System.out.println("连接关闭！");
     } catch (SQLException e1) {
       JOptionPane.showMessageDialog(null, "sql错误", "提示", 2);
-      e1.printStackTrace();
+//      e1.printStackTrace();
     }
     if (sum==0) {
 //      username.add(name);
@@ -46,7 +46,7 @@ public class AddUser {
         connection.close();        
       } catch (SQLException e1) {
         JOptionPane.showMessageDialog(null, "服务器异常，添加失败！", "提示", 2);
-        e1.printStackTrace();
+//        e1.printStackTrace();
       }
       JOptionPane.showMessageDialog(null, "添加成功！", "提示", 1);
     } else {
@@ -55,16 +55,6 @@ public class AddUser {
 //      aa.setVisible(true);
     }
   }
-
-//  public ArrayList<String> getUsername() {
-//    return username;
-//  }
-//
-//  public ArrayList<String> getUserpassword() {
-//    return userpassword;
-//  }
-
-
   public void deluser(String name) {
     int sum=0;
     try {
