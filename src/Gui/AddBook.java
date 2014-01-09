@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -37,7 +38,7 @@ public class AddBook extends JFrame {
   JButton back = new JButton("返回");
   String gethead = new String();
   private String name;
-  private String hd;
+  private String hd="";
   String[] head = null;
   String[] headlist = null;
   Font font = new Font("Serif", Font.BOLD, 25);
@@ -52,7 +53,7 @@ public class AddBook extends JFrame {
       Connection connection =
           DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
               "root", "121126");
-      System.out.println("连接成功！");
+      // System.out.println("连接成功！");
       Statement statement1 = connection.createStatement();
       ResultSet getint;
       getint = statement1.executeQuery("select count(*) from bookhead");
@@ -73,7 +74,7 @@ public class AddBook extends JFrame {
       head = temp;
       headlist = temp2;
       connection.close();
-      System.out.println("连接关闭！");
+      // System.out.println("连接关闭！");
     } catch (SQLException e1) {
       System.out.println("sql wrong!");
       e1.printStackTrace();
@@ -91,6 +92,7 @@ public class AddBook extends JFrame {
       @Override
       public void valueChanged(ListSelectionEvent e) {
         hd = head[list.getSelectedIndex()];
+        System.out.println(hd);
       }
     });
     ButtonListener l = new ButtonListener();
@@ -135,19 +137,18 @@ public class AddBook extends JFrame {
       if (e.getSource() == back) {
         setVisible(false);
       } else {
-        if (normal.isSelected()) {
-          try {
+        try {
+          if (!hd.equals(""))
+          {if (normal.isSelected()) {
             new Book(name, hd, 0);
             setVisible(false);
-          } catch (ClassNotFoundException | SQLException e1) {
-
-          }
-        } else {
-          try {
+          } else {
             new Book(name, hd, 1);
-            setVisible(false);
-          } catch (ClassNotFoundException | SQLException e1) {}
-        }
+            setVisible(false);}}
+          else{
+            JOptionPane.showMessageDialog(null, "请选择图书类别！", "提示", 1);
+          }         
+        } catch (ClassNotFoundException | SQLException e1) {        }
       }
     }
   }

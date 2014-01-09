@@ -1,5 +1,6 @@
 package Gui;
 
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +14,7 @@ import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -29,8 +31,12 @@ public class ChoiceDialogue extends JFrame {
   JButton b = new JButton("返回");
   private String[] name = {"图书编号", "名字", "图书级别", "借出次数"};
   String id = "";
-
+  
+  JLabel jlabel=new JLabel("<html><br><br>为您检索的相关图书，请选择:");
+  Font font=new Font("宋体",Font.BOLD,20);
+  
   public ChoiceDialogue() {
+    setTitle("图书检索系统");
     setLayout(new GridLayout(3, 1));
     setSize(800, 600);
     setVisible(true);
@@ -40,7 +46,7 @@ public class ChoiceDialogue extends JFrame {
 
   public void viewTable(final Object[][] a) {
     final JTable jtable = new JTable(a, name);
-    jtable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+    jtable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {//添加匿名监听类，负责监鼠标选择
 
       @Override
       public void valueChanged(ListSelectionEvent e) {
@@ -51,17 +57,21 @@ public class ChoiceDialogue extends JFrame {
         }
       }
     });
+    JPanel temp = new JPanel();
+    jlabel.setFont(font);
+    temp.add(jlabel);
+    add(temp);
+    setLayout(new GridLayout(3,1));
     add(new JScrollPane(jtable));
     checkout.addActionListener(new BackButtonListener());
     b.addActionListener(new BackButtonListener());
-    JPanel temp = new JPanel();
-    temp.add(checkout);// 为什么不用把表添加到布局中，只用调用方法就ok？
-    temp.add(b);
-    add(temp);
+      JPanel temp2=new JPanel();  
+    temp2.add(checkout);// 为什么不用把表添加到布局中，只用调用方法就ok？
+    temp2.add(b);
+    add(temp2);
   }
 
   class BackButtonListener implements ActionListener {
-
     public void actionPerformed(ActionEvent e) {
       try {
         Class.forName("com.mysql.jdbc.Driver");
@@ -72,12 +82,11 @@ public class ChoiceDialogue extends JFrame {
       if (e.getSource() == b) {
         setVisible(false);
       } else {// 借书操作
-
         try {
           Connection connection =
               DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
                   "root", "121126");
-          System.out.println("连接成功！");
+//          System.out.println("连接成功！");
 
           Statement statement0 = connection.createStatement();
           ResultSet getpass;
@@ -120,7 +129,7 @@ public class ChoiceDialogue extends JFrame {
 
           JOptionPane.showMessageDialog(null, "借阅成功", "提示", 1);
           connection.close();
-          System.out.println("连接关闭！");
+//          System.out.println("连接关闭！");
         } catch (SQLException e1) {
           System.out.println("sql wrong!");
           e1.printStackTrace();

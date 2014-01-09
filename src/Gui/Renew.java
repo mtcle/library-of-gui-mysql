@@ -28,7 +28,7 @@ import javax.swing.event.ListSelectionListener;
 public class Renew extends JFrame {
 
   private static final long serialVersionUID = -978844632678286447L;
-  
+   int size=0;
   JButton renew = new JButton("续借");
   JButton b = new JButton("返回");
   private String[] name = {"图书编号", "名字", "借出日期", "到期日期"};
@@ -36,9 +36,9 @@ public class Renew extends JFrame {
   String[][] temp = null;
   SimpleDateFormat a = new SimpleDateFormat("yyyy-MM-dd");
 
+  
   public Renew() throws SQLException, ClassNotFoundException {
     Class.forName("com.mysql.jdbc.Driver");
-    int size = 0;
     Connection connection =
         DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
             "root", "121126");
@@ -70,11 +70,12 @@ public class Renew extends JFrame {
     temp = getbook;
     setLayout(new GridLayout(3, 1));
     setSize(600, 400);
-    setVisible(true);
+//    setVisible(true);
     setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setTitle("图书续借平台");
   }
+ 
 
   public void viewTable() {
     final JTable jtable = new JTable(temp, name);

@@ -26,33 +26,24 @@ public class ViewOfRecord extends JFrame {
     setVisible(true);
     setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+    setTitle("图书记录管理查询平台");
   }
 
   public void viewTable(Object[][] a) {
     JTable jtable = new JTable(a, record);
     add(new JScrollPane(jtable));
-//    TableColumn temp1 = null;
-//    TableColumn temp2 = null;
-//    TableColumn temp4 = null;
-//    temp1 = jtable.getColumnModel().getColumn(0);
-//    temp2 = jtable.getColumnModel().getColumn(1);
-//    temp4 = jtable.getColumnModel().getColumn(4);
-//    temp1.setPreferredWidth(10);
-//    temp2.setPreferredWidth(10);
-//    temp4.setPreferredWidth(10);
-    // temp1.setWidth(10);
     backButton.addActionListener(new BackButtonListener());
     JPanel temp = new JPanel();
     temp.add(backButton);
     add(temp);
-
   }
 
   class BackButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
       if (e.getSource() == backButton) {
         setVisible(false);
+//        add(new JLabel("tsetsetas"));
+//        validate();
       }
     }
   }

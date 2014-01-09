@@ -1,5 +1,6 @@
 package Gui;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import model.Book;
@@ -23,12 +25,14 @@ import model.Book;
  */
 public class Record extends JFrame {
   private static final long serialVersionUID = 2532471882810750062L;
-  JButton a = new JButton("查询");
+  JButton a = new JButton("单本记录");
+  JButton user = new JButton("我的借书记录");
   JButton b = new JButton("返回");
   String[] temprecordid;
-  String choice = null;
+  String choice = "aadsfasdfasdfasdfasd";
   ArrayList<Book> tempBookList;
   private String[][] record = null;
+  Font font2 = new Font("隶书", Font.BOLD, 17);
 
   public Record() throws ClassNotFoundException {
     Class.forName("com.mysql.jdbc.Driver");
@@ -39,7 +43,7 @@ public class Record extends JFrame {
       Connection connection =
           DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
               "root", "121126");
-      System.out.println("连接成功！");
+      // System.out.println("连接成功！");
       Statement statement = connection.createStatement();
       ResultSet getpass;
       getpass = statement.executeQuery("select count(*) from book");
@@ -53,16 +57,16 @@ public class Record extends JFrame {
       getstr = statement.executeQuery("select * from book");
       int j = 0;
       while (getstr.next()) {
-        temp1[j] = getstr.getString(3);//
+        temp1[j] = "图书编号：" + getstr.getString(2) + " 图书名字：" + getstr.getString(3);//
         // System.out.println("pass"+passtemp);
         j++;
       }
       temp = temp1;
       connection.close();
-      System.out.println("连接关闭！");
+      // System.out.println("连接关闭！");
     } catch (SQLException e1) {
       System.out.println("sql wrong!");
-      e1.printStackTrace();
+      // e1.printStackTrace();
     }
     temprecordid = temp;
     final JComboBox<String> bookname = new JComboBox<>(temp);
@@ -72,15 +76,23 @@ public class Record extends JFrame {
             choice = (String) bookname.getSelectedItem();
           }
         });
+
     buttonlisenter l = new buttonlisenter();
-    a.setBounds(200, 320, 80, 30);
+    a.setBounds(100, 280, 130, 30);
     a.addActionListener(l);
-    b.setBounds(320, 320, 80, 30);
+    user.setBounds(260, 280, 130, 30);
+    user.addActionListener(l);
+    b.setBounds(420, 280, 130, 30);
     b.addActionListener(l);
     setLayout(null);
-    bookname.setBounds(30, 20, 130, 22);
+    JLabel jlabel = new JLabel("请选择您要查询的图书:");
+    jlabel.setFont(font2);
+    bookname.setBounds(150, 60, 330, 30);
+    jlabel.setBounds(150, 10, 300, 30);
+    add(jlabel);
     add(bookname);
     add(a);
+    add(user);
     add(b);
     // add(c);
     setSize(600, 380);
@@ -90,9 +102,9 @@ public class Record extends JFrame {
   }
 
   private class buttonlisenter implements ActionListener {
-
     @Override
     public void actionPerformed(ActionEvent e) {
+      int aa = 0;
       if (e.getSource() == b) {
         setVisible(false);
         MainGui temp;
@@ -103,44 +115,90 @@ public class Record extends JFrame {
         } catch (ClassNotFoundException e1) {
           JOptionPane.showMessageDialog(null, "服务器错误！", "提示", 2);
         }// 调用系统主界面
-      } else if (e.getSource() == a) {
-        // System.out.println("choice"+choice);
+      } else if (e.getSource() == user) {
         try {
           Connection connection =
               DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
                   "root", "121126");
-//          System.out.println("连接成功！");
+          // System.out.println("连接成功！");
           Statement statement1 = connection.createStatement();
-          int aa = 0;
           ResultSet get;
           get =
-              statement1
-                  .executeQuery("select count(*) from record where bookname='" + choice + "'");
+              statement1.executeQuery("select count(*) from record where userid='"
+                  + Login.username + "'");
           while (get.next()) {
             aa = get.getInt(1);
-            System.out.println("pass" + aa);
           }
           Statement statement = connection.createStatement();
           ResultSet getpass;
-          getpass = statement.executeQuery("select * from record where bookname='" + choice + "'");
+          getpass =
+              statement.executeQuery("select * from record where userid='"
+                  + Login.username + "'");
           String[][] temp3 = new String[aa][9];
           int j = 0;
           while (getpass.next()) {
             for (int i = 0; i < 9; i++) {
               temp3[j][i] = getpass.getString(i + 1);
-            }// System.out.println("pass"+passtemp);
+              // System.out.println("pass"+temp3[j][i]);
+            }
             j++;
           }
           record = temp3;
           connection.close();
-//          System.out.println("连接关闭！");
+          // System.out.println("连接关闭！");
         } catch (SQLException e1) {
           System.out.println("sql wrong!");
-          e1.printStackTrace();
+          // e1.printStackTrace();
         }
-        ViewOfRecord temp = new ViewOfRecord();
-        setTitle("历史记录查询");
-        temp.viewTable(record);
+        if (aa > 0) {
+          ViewOfRecord temp = new ViewOfRecord();
+          setTitle("历史记录查询");
+          temp.viewTable(record);
+        } else {
+          JOptionPane.showMessageDialog(null, "您暂无借阅记录！", "提示", 1);
+        }
+      } else if (e.getSource() == a) {
+        try {
+          Connection connection =
+              DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
+                  "root", "121126");
+          // System.out.println("连接成功！");
+          Statement statement1 = connection.createStatement();
+          ResultSet get;
+          get =
+              statement1.executeQuery("select count(*) from record where bookid='"
+                  + choice.substring(5, 17) + "'");
+          while (get.next()) {
+            aa = get.getInt(1);
+          }
+          Statement statement = connection.createStatement();
+          ResultSet getpass;
+          getpass =
+              statement.executeQuery("select * from record where bookid='"
+                  + choice.substring(5, 17) + "'");
+          String[][] temp3 = new String[aa][9];
+          int j = 0;
+          while (getpass.next()) {
+            for (int i = 0; i < 9; i++) {
+              temp3[j][i] = getpass.getString(i + 1);
+              // System.out.println("pass"+temp3[j][i]);
+            }
+            j++;
+          }
+          record = temp3;
+          connection.close();
+          // System.out.println("连接关闭！");
+        } catch (SQLException e1) {
+          System.out.println("sql wrong!");
+          // e1.printStackTrace();
+        }
+        if (aa > 0) {
+          ViewOfRecord temp = new ViewOfRecord();
+          setTitle("历史记录查询");
+          temp.viewTable(record);
+        } else {
+          JOptionPane.showMessageDialog(null, "该本图书无记录！", "提示", 1);
+        }
       }
     }
   }

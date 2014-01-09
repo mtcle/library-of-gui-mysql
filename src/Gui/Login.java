@@ -47,6 +47,7 @@ public class Login extends JFrame {
 
 
     login.addActionListener(new ButtonListener());// 监听绑定
+    jpassword.addActionListener(new ButtonListener());
     JLabel welcome = new JLabel("欢迎使用图书借阅系统");
     welcome.setFont(font2);
     // jtext.setSize(5,10);
@@ -62,6 +63,7 @@ public class Login extends JFrame {
     JLabel password = new JLabel("     密码：");
     // jpanel1.setLayout(new BorderLayout());
     jpassword.setEchoChar('*');
+
     ButtonGroup group = new ButtonGroup();
     group.add(others);
     group.add(admin);
@@ -84,7 +86,7 @@ public class Login extends JFrame {
     jpanel.add(login);
     jpanel.setBackground(bg);
     add(jpanel, BorderLayout.CENTER);
-    setTitle("login");
+    setTitle("登录界面");
     setSize(240, 180);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo(null);
@@ -95,7 +97,7 @@ public class Login extends JFrame {
   private class ButtonListener implements ActionListener {
     @SuppressWarnings("deprecation")
     public void actionPerformed(ActionEvent e) {
-      if (e.getSource() == login && admin.isSelected()) {// 管理员登陆
+      if ((e.getSource() == login || e.getSource() == jpassword) && admin.isSelected()) {// 管理员登陆
         String passtemp = "";
         try {
           Connection connection =
@@ -125,13 +127,13 @@ public class Login extends JFrame {
             frame.setVisible(true);
           } catch (ClassNotFoundException e1) {
             JOptionPane.showMessageDialog(null, "服务器错误！", "提示", 2);
-//            e1.printStackTrace();
+            // e1.printStackTrace();
           }
           username = jtext.getText();
         } else {
           JOptionPane.showMessageDialog(null, "login failed！", "wraning", 1);
         }
-      } else if (e.getSource() == login && others.isSelected()) {
+      } else if ((e.getSource() == login || e.getSource() == jpassword) && others.isSelected()) {
         setVisible(false);
         JOptionPane.showMessageDialog(null, "您以游客身份登陆，权限不足", "提示", 1);
         MainGui frame;
@@ -142,7 +144,7 @@ public class Login extends JFrame {
           frame.setVisible(true);
         } catch (ClassNotFoundException e1) {
           JOptionPane.showMessageDialog(null, "服务器错误！", "提示", 2);
-//          e1.printStackTrace();
+          // e1.printStackTrace();
         }
         // frame.adduser.setVisible(false);//本阶段是为了测试方便
         // frame.addBook.setVisible(false);
@@ -169,7 +171,7 @@ public class Login extends JFrame {
           connection.close();
         } catch (SQLException e1) {
           System.out.println("sql wrong!");
-//          e1.printStackTrace();
+          // e1.printStackTrace();
         }
         if (pass.equals(vippasstemp)) {
           setVisible(false);

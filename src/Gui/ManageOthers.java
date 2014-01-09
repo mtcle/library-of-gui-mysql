@@ -1,6 +1,7 @@
 package Gui;
 
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -55,7 +56,9 @@ public class ManageOthers extends JFrame {
     setTitle("综合管理平台");
     setVisible(true);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    setLocationRelativeTo(null);
+    int xCoordinate = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+    int yCoordinate = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+    setLocation((int) (xCoordinate - 550) / 2, (int) (yCoordinate - 400) / 2);    
     setSize(400, 300);
     Class.forName("com.mysql.jdbc.Driver");
   }
@@ -108,11 +111,14 @@ public class ManageOthers extends JFrame {
           } else {
             JOptionPane.showMessageDialog(null, "密码错误！", "错误", 1);
           }
-        } else if (e.getSource() == back) {
+        } else if (e.getSource() == back) {          
           setVisible(false);
+          new MainGui();
+          
         } else {
-          String str = JOptionPane.showInputDialog("输入图书类别");
-          if (!str.equals("")) bookStyle = str;
+//          new BookStyleManage();
+//          String str = JOptionPane.showInputDialog("输入图书类别");
+//          if (!str.equals("")) bookStyle = str;
         }
       } catch (Exception ex) {
         JOptionPane.showMessageDialog(null, "请输入正确的数据！", "错误", 1);
