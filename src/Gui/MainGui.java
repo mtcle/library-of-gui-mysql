@@ -41,9 +41,9 @@ public class MainGui extends JFrame {
   JButton changepass = new JButton("修改密码");
   JButton exit = new JButton("退出");
   JPanel menu = new JPanel();
-  JTextArea jtext = new JTextArea(" 帮助信息", 40, 20);
+  JTextArea jtext = new JTextArea(" 帮助信息", 30, 11);
   BookStack stack = new BookStack(10);// 初始化书架大小，后期设计应该归管理员操作
-
+  
   public MainGui() throws ClassNotFoundException {
     Class.forName("com.mysql.jdbc.Driver");
     setTitle("欢迎使用图书管理系统");
@@ -212,7 +212,6 @@ public class MainGui extends JFrame {
               DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
                   "root", "121126");
           // jdbc:mysql://地址:3306/数据库名?characterEncoding=utf8
-          System.out.println("连接成功！");
           Statement statement = connection.createStatement();
           ResultSet count = statement.executeQuery("select count(*) from book");
           int size = 0;
@@ -266,8 +265,8 @@ public class MainGui extends JFrame {
       } else if (e.getSource() == checkOut) {// 借出
 
         try {
-          String name = JOptionPane.showInputDialog(null, "输入借阅的图书名,支持模糊搜索：", "提示", 3);
-          String[][] temp = null;
+          String name = JOptionPane.showInputDialog(null, "输入借阅的图书名,支持模糊搜索", "提示", 3);
+          
           if (!name.equals("") && !name.equals(null)) {
             int s = 0;
             Class.forName("com.mysql.jdbc.Driver");
@@ -286,6 +285,7 @@ public class MainGui extends JFrame {
             if (s == 0) {
               JOptionPane.showMessageDialog(null, "该图书不存在，请检查拼写是否错误！", "提示", 1);
             } else {
+               String[][] temp = null;
               temp = stack.checkOut(name);
               ChoiceDialogue a = new ChoiceDialogue();
               a.viewTable(temp);
@@ -311,7 +311,7 @@ public class MainGui extends JFrame {
         try {
           a = new Record();
           a.setVisible(true);
-          if(!Login.username.equals("admin")){
+          if (!Login.username.equals("admin")) {
             a.a.setEnabled(false);
           }
         } catch (ClassNotFoundException e1) {
@@ -368,14 +368,14 @@ public class MainGui extends JFrame {
               JOptionPane.showMessageDialog(null, "密码错误！", "错误", 1);
             }
           }
-        } catch (Exception e1) {}//抓取空指针异常的用户放弃输入时的空指针异常
+        } catch (Exception e1) {}// 抓取空指针异常,用户放弃输入时的空指针异常
       } else if (e.getSource() == adduser) {// 管理会员的
         new VipManage();
       } else if (e.getSource() == exit) {
         System.exit(0);
       } else if (e.getSource() == managebook) {// 设置图书罚金，租金，图书类别
-         dispose();       
-        new BookStyleManage();        
+        dispose();
+        new BookStyleManage();
       }
     }
   }

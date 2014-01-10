@@ -31,10 +31,10 @@ public class ChoiceDialogue extends JFrame {
   JButton b = new JButton("返回");
   private String[] name = {"图书编号", "名字", "图书级别", "借出次数"};
   String id = "";
-  
-  JLabel jlabel=new JLabel("<html><br><br>为您检索的相关图书，请选择:");
-  Font font=new Font("宋体",Font.BOLD,20);
-  
+
+  JLabel jlabel = new JLabel("<html><br><br>为您检索的相关图书，请选择:");
+  Font font = new Font("宋体", Font.BOLD, 20);
+
   public ChoiceDialogue() {
     setTitle("图书检索系统");
     setLayout(new GridLayout(3, 1));
@@ -47,26 +47,26 @@ public class ChoiceDialogue extends JFrame {
 
   public void viewTable(final Object[][] a) {
     final JTable jtable = new JTable(a, name);
-    jtable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {//添加匿名监听类，负责监鼠标选择
+    jtable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {// 添加匿名监听类，负责监鼠标选择
 
-      @Override
-      public void valueChanged(ListSelectionEvent e) {
-        int choice = jtable.getSelectedRow();
-        if (choice != -1) {
-          id = (String) a[choice][0];
-          // System.out.println(id);
-        }
-      }
-    });
+          @Override
+          public void valueChanged(ListSelectionEvent e) {
+            int choice = jtable.getSelectedRow();
+            if (choice != -1) {
+              id = (String) a[choice][0];
+              // System.out.println(id);
+            }
+          }
+        });
     JPanel temp = new JPanel();
     jlabel.setFont(font);
     temp.add(jlabel);
     add(temp);
-    setLayout(new GridLayout(3,1));
+    setLayout(new GridLayout(3, 1));
     add(new JScrollPane(jtable));
     checkout.addActionListener(new BackButtonListener());
     b.addActionListener(new BackButtonListener());
-      JPanel temp2=new JPanel();  
+    JPanel temp2 = new JPanel();
     temp2.add(checkout);// 为什么不用把表添加到布局中，只用调用方法就ok？
     temp2.add(b);
     add(temp2);
@@ -78,7 +78,7 @@ public class ChoiceDialogue extends JFrame {
         Class.forName("com.mysql.jdbc.Driver");
       } catch (ClassNotFoundException e2) {
         JOptionPane.showMessageDialog(null, "数据库出错！", "提示", 1);
-//        e2.printStackTrace();
+        // e2.printStackTrace();
       }
       if (e.getSource() == b) {
         setVisible(false);
@@ -87,7 +87,7 @@ public class ChoiceDialogue extends JFrame {
           Connection connection =
               DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
                   "root", "121126");
-//          System.out.println("连接成功！");
+          // System.out.println("连接成功！");
           Statement statement0 = connection.createStatement();
           ResultSet getpass;
           getpass =
@@ -104,29 +104,37 @@ public class ChoiceDialogue extends JFrame {
           while (getname.next()) {
             bookname = getname.getString(1);
           }
-          Statement statement = connection.createStatement();
-          statement.execute("update book set status=1,checkoutsum='" + i + "'  where bookid='" + id
-              + "'");
-          Date tempdate = new Date();
-          SimpleDateFormat timeformat = new SimpleDateFormat("yyyy-MM-dd");// 格式化时间输出
-          statement
-              .execute("insert record (bookid,bookname,userid,checkout,checkin,plan,rent,fajin)value('"
-                  + id
-                  + "','"
-                  + bookname
-                  + "','"
-                  + Login.username
-                  + "','"
-                  + timeformat.format(tempdate.getTime())
-                  + "',null,'"
-                  + timeformat.format(tempdate.getTime()+20*24*60*60*1000l) + "','0','0')");
-
-          JOptionPane.showMessageDialog(null, "借阅成功", "提示", 1);
-          connection.close();
-//          System.out.println("连接关闭！");
+          try {
+            Statement statement = connection.createStatement();
+            connection.setAutoCommit(false);
+            statement.execute("update book set status=1,checkoutsum='" + i + "'  where bookid='"
+                + id + "'");
+            Date tempdate = new Date();
+            SimpleDateFormat timeformat = new SimpleDateFormat("yyyy-MM-dd");// 格式化时间输出
+            statement
+                .execute("insert record (bookid,bookname,userid,checkout,checkin,plan,rent,fajin)value('"
+                    + id
+                    + "','"
+                    + bookname
+                    + "','"
+                    + Login.username
+                    + "','"
+                    + timeformat.format(tempdate.getTime())
+                    + "',null,'"
+                    + timeformat.format(tempdate.getTime() + 20 * 24 * 60 * 60 * 1000l)
+                    + "','0','0')");
+            JOptionPane.showMessageDialog(null, "借阅成功", "提示", 1);
+            connection.commit();
+//            validate();
+          } catch (SQLException e1) {
+            connection.rollback();
+          } finally {
+            connection.close();
+          }
+          // System.out.println("连接关闭！");
         } catch (SQLException e1) {
           JOptionPane.showMessageDialog(null, "sql错误", "提示", 2);
-//          e1.printStackTrace();
+          // e1.printStackTrace();
         }
       }
     }

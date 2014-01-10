@@ -43,13 +43,11 @@ public class Record extends JFrame {
       Connection connection =
           DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
               "root", "121126");
-      // System.out.println("连接成功！");
       Statement statement = connection.createStatement();
       ResultSet getpass;
       getpass = statement.executeQuery("select count(*) from book");
       while (getpass.next()) {
         s = getpass.getInt(1);
-        // System.out.println("pass"+passtemp);
       }
       String[] temp1 = new String[s];
       connection.createStatement();
@@ -58,12 +56,10 @@ public class Record extends JFrame {
       int j = 0;
       while (getstr.next()) {
         temp1[j] = "图书编号：" + getstr.getString(2) + " 图书名字：" + getstr.getString(3);//
-        // System.out.println("pass"+passtemp);
         j++;
       }
       temp = temp1;
       connection.close();
-      // System.out.println("连接关闭！");
     } catch (SQLException e1) {
       JOptionPane.showMessageDialog(null, "服务器错误！", "提示", 2);
     }
@@ -94,6 +90,9 @@ public class Record extends JFrame {
     add(user);
     add(b);
     // add(c);
+  if(!Login.username.equals("admin")){
+  bookname.setEnabled(false);
+}
     setSize(600, 380);
     setLocationRelativeTo(null);
     setResizable(false);

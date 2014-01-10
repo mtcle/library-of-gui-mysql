@@ -125,7 +125,10 @@ public class VipManage extends JFrame {
       } else if (e.getSource() == deluser) {// 删除会员
         viewuser.doClick();// 触发一次view按钮的button事件
         String username = JOptionPane.showInputDialog("输入用户名");
-        user.deluser(username);
+        try {
+          user.deluser(username);
+        } catch (SQLException e1) {
+          JOptionPane.showMessageDialog(null, "服务器异常，添加失败！", "提示", 1);        }
         viewuser.doClick();
       } else {// 返回
 //        setVisible(false);

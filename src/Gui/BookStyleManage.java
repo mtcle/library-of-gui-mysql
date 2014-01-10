@@ -24,10 +24,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 public class BookStyleManage extends JFrame {
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -7647381992063088986L;
   /**
    * @param 对图书类别的管理，设置等
@@ -47,7 +43,8 @@ public class BookStyleManage extends JFrame {
   private int hang = -1;
   private int lie;
   private String[] name = {"图书代号", "图书类别", "租金单价", "罚金单价"};
-//  private String gethead;
+
+  // private String gethead;
   public BookStyleManage() {
     ButtonListener l = new ButtonListener();
     add.addActionListener(l);
@@ -108,10 +105,10 @@ public class BookStyleManage extends JFrame {
       while (gethead.next()) {
         for (q = 0; q < 4; q++) {
           getstr[p][q] = gethead.getString(q + 2);
-//          System.out.println(getstr[p][q]);
+          // System.out.println(getstr[p][q]);
         }
         p++;
-        temp=getstr;
+        temp = getstr;
       }
       connection.close();
       // System.out.println("连接关闭！");
@@ -125,9 +122,9 @@ public class BookStyleManage extends JFrame {
 
       @Override
       public void valueChanged(ListSelectionEvent e) {
-        
+
         hang = table.getSelectedRow();
-        lie = table.getSelectedColumn();       
+        lie = table.getSelectedColumn();
         tempstr = table.getValueAt(hang, lie);
         if (tempstr != null) {
           input =
@@ -140,7 +137,7 @@ public class BookStyleManage extends JFrame {
     // jpanel0.removeAll();// 先移除掉上面的控件
     jpanel0.setLayout(new GridLayout());// 默认是流布局
     jpanel0.add(new JScrollPane(table));
-//     setLocationRelativeTo(null);
+    // setLocationRelativeTo(null);
     int xCoordinate = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
     int yCoordinate = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
     setLocation((int) (xCoordinate - 800) / 2, (int) (yCoordinate - 600) / 2);
@@ -161,7 +158,8 @@ public class BookStyleManage extends JFrame {
             // System.out.println("连接成功！");
             Statement statement = connection.createStatement();
             String[] header = {"head", "bookstyle", "zujin", "fajin"};
-            statement.execute("update bookhead set " + header[lie] + " = '" + input + "' where head='"+temp[hang][0]+"'");/////////+++++++++++++++            
+            statement.execute("update bookhead set " + header[lie] + " = '" + input
+                + "' where head='" + temp[hang][0] + "'");// ///////+++++++++++++++
             connection.close();
             JOptionPane.showMessageDialog(null, "修改成功", "提示", 1);
             dispose();
@@ -177,22 +175,34 @@ public class BookStyleManage extends JFrame {
       } else if (e.getSource() == delete) {//
         System.out.println(hang);
         if (hang > 0) {
+          Connection connection = null;
           try {
-            Connection connection =
+            connection =
                 DriverManager.getConnection(
                     "jdbc:mysql://localhost/book_mgr?characterEncoding=utf8", "root", "121126");
+          } catch (SQLException e2) {}
+          try {
+
             Statement statement = connection.createStatement();
-            System.out.println(temp[hang][0]);
+            // System.out.println(temp[hang][0]);
+            connection.setAutoCommit(false);
             statement.execute("delete from bookhead where head= '" + temp[hang][0] + "'");
-            connection.close();
             JOptionPane.showMessageDialog(null, "删除成功！", "提示", 1);
             // validate();
+            connection.commit();
             dispose();
             new BookStyleManage();
             // jpanel.updateUI();
             // System.out.println("连接关闭！");
           } catch (SQLException e1) {
             e1.printStackTrace();
+            try {
+              connection.rollback();
+            } catch (SQLException e2) {}
+          } finally {
+            try {
+              connection.close();
+            } catch (SQLException e1) {}
           }
         }
       } else if (e.getSource() == add) {
@@ -232,26 +242,39 @@ public class BookStyleManage extends JFrame {
               if (zujin != 0) {
                 fajin = Float.parseFloat(JOptionPane.showInputDialog(null, "请输入图书罚金单价：", "提示", 2));
                 if (fajin != 0) {
+                  Connection connection = null;
                   try {
-                    Connection connection =
+                    connection =
                         DriverManager.getConnection(
                             "jdbc:mysql://localhost/book_mgr?characterEncoding=utf8", "root",
                             "121126");
+                  } catch (SQLException e2) {
+                    // TODO Auto-generated catch block
+                    e2.printStackTrace();
+                  }
+                  try {
                     // System.out.println("连接成功！");
                     Statement statement = connection.createStatement();
-
+                    connection.setAutoCommit(false);// 设置自动提交为false
                     statement.execute("insert bookhead (head,bookstyle,zujin,fajin)value('"
                         + bookhead + "','" + bookstyle + "'," + zujin + "," + fajin + ")");
+                    connection.commit();
                     JOptionPane.showMessageDialog(null, "添加成功！", "提示", 1);
-//                    jpanel.updateUI();
-//                    setVisible(false);
+                    // jpanel.updateUI();
+                    // setVisible(false);
                     dispose();
                     new BookStyleManage();
-                    connection.close();
                     // System.out.println("连接关闭！");
                   } catch (SQLException e1) {
-                    JOptionPane.showMessageDialog(null, "您以游客身份登陆，权限不足", "提示", 1);
-                    e1.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "数据库有问题了！", "提示", 1);
+                    // e1.printStackTrace();
+                    try {
+                      connection.rollback();
+                    } catch (SQLException e2) {}
+                  } finally {
+                    try {
+                      connection.close();// 关闭连接
+                    } catch (SQLException e1) {}
                   }
                 }
               } else {
@@ -259,14 +282,13 @@ public class BookStyleManage extends JFrame {
               }
             } else {
               JOptionPane.showMessageDialog(null, "您输入的图书代码有误，请核对后重新输入！", "提示", 1);
-            }           
+            }
+          } else {
+            JOptionPane.showMessageDialog(null, "有关键字段重复了！", "提示", 1);
           }
-          else{
-            JOptionPane.showMessageDialog(null, "有关键字段重复了！", "提示", 1); 
-          }         
         } else {
           JOptionPane.showMessageDialog(null, "请输入正确的数据！", "提示", 1);
-        }        
+        }
       } else if (e.getSource() == back) {// 退出按钮
         System.exit(0);
       }

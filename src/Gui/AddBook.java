@@ -76,8 +76,8 @@ public class AddBook extends JFrame {
       connection.close();
       // System.out.println("连接关闭！");
     } catch (SQLException e1) {
-      System.out.println("sql wrong!");
-      e1.printStackTrace();
+//      System.out.println("sql wrong!");
+//      e1.printStackTrace();
     }
     final JList<String> list = new JList<String>(headlist);
     group.add(normal);
@@ -92,7 +92,6 @@ public class AddBook extends JFrame {
       @Override
       public void valueChanged(ListSelectionEvent e) {
         hd = head[list.getSelectedIndex()];
-        System.out.println(hd);
       }
     });
     ButtonListener l = new ButtonListener();

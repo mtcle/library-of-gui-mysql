@@ -33,6 +33,7 @@ public class ViewOfRecord extends JFrame {
   public void viewTable(Object[][] a) {
     JTable jtable = new JTable(a, record);
     add(new JScrollPane(jtable));
+
     backButton.addActionListener(new BackButtonListener());
     JPanel temp = new JPanel();
     temp.add(backButton);
