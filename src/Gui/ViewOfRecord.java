@@ -12,13 +12,10 @@ import javax.swing.JTable;
 
 public class ViewOfRecord extends JFrame {
   /**
-   * 现在实现一条一条的浏览的功能
-   * 还需要增加功能是一本书的浏览
-   * 已经实现
+   * 既可以一本一本的查看历史记录，也可以查看本人记录，针对admin和普通会员权限不同
    */
   private static final long serialVersionUID = 4878192299484824382L;
-  private String[] record = {"序号","图书编号", "图书名字","借阅者id", "借出日期", "归还日期","计划日期", "当次租金","当次罚金"};
-  // private JTable jtable=new JTable(null,name);
+  private String[] record = {"序号", "图书编号", "图书名字", "借阅者id", "借出日期", "归还日期", "计划日期", "当次租金", "当次罚金"};
   JButton backButton = new JButton("返回主菜单");
 
   public ViewOfRecord() {
@@ -44,9 +41,10 @@ public class ViewOfRecord extends JFrame {
     public void actionPerformed(ActionEvent e) {
       if (e.getSource() == backButton) {
         dispose();
-        //        setVisible(false);
-//        add(new JLabel("tsetsetas"));
-//        validate();
+        // setVisible(false);
+        try {
+          new MainGui();
+        } catch (ClassNotFoundException e1) {}
       }
     }
   }

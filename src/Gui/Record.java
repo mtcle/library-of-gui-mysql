@@ -37,7 +37,6 @@ public class Record extends JFrame {
   public Record() throws ClassNotFoundException {
     Class.forName("com.mysql.jdbc.Driver");
     String[] temp = null;
-
     int s = 0;
     try {
       Connection connection =
@@ -90,9 +89,9 @@ public class Record extends JFrame {
     add(user);
     add(b);
     // add(c);
-  if(!Login.username.equals("admin")){
-  bookname.setEnabled(false);
-}
+    if (!Login.username.equals("admin")) {
+      bookname.setEnabled(false);
+    }
     setSize(600, 380);
     setLocationRelativeTo(null);
     setResizable(false);
@@ -108,8 +107,14 @@ public class Record extends JFrame {
         MainGui temp;
         try {
           temp = new MainGui();
-          temp.setVisible(true);
-          temp.exit.setVisible(false);
+          if (!Login.username.equals("admin")) {
+            temp.setVisible(true);
+            temp.addBook.setEnabled(false);
+            temp.adduser.setEnabled(false);
+            temp.delete.setEnabled(false);
+            temp.managebook.setEnabled(false);
+          }
+          // temp.exit.setVisible(false);
         } catch (ClassNotFoundException e1) {
           JOptionPane.showMessageDialog(null, "服务器错误！", "提示", 2);
         }// 调用系统主界面

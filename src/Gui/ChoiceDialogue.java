@@ -125,7 +125,7 @@ public class ChoiceDialogue extends JFrame {
                     + "','0','0')");
             JOptionPane.showMessageDialog(null, "借阅成功", "提示", 1);
             connection.commit();
-//            validate();
+            // validate();
           } catch (SQLException e1) {
             connection.rollback();
           } finally {

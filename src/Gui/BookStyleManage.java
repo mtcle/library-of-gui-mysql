@@ -39,7 +39,6 @@ public class BookStyleManage extends JFrame {
   String[][] temp = null;
   Object tempstr = "";
   Object input = "";
-  // String input=null;
   private int hang = -1;
   private int lie;
   private String[] name = {"图书代号", "图书类别", "租金单价", "罚金单价"};
@@ -71,8 +70,7 @@ public class BookStyleManage extends JFrame {
     try {
       Class.forName("com.mysql.jdbc.Driver");
     } catch (ClassNotFoundException e2) {
-      // TODO Auto-generated catch block
-      e2.printStackTrace();
+      // e2.printStackTrace();
     }
     try {
       Connection connection =
@@ -89,7 +87,7 @@ public class BookStyleManage extends JFrame {
       // System.out.println("连接关闭！");
     } catch (SQLException e1) {
       JOptionPane.showMessageDialog(null, "数据库读取错误！", "提示", 2);
-      e1.printStackTrace();
+      // e1.printStackTrace();
     }
     final String[][] getstr = new String[s][4];
     try {
@@ -122,7 +120,6 @@ public class BookStyleManage extends JFrame {
 
       @Override
       public void valueChanged(ListSelectionEvent e) {
-
         hang = table.getSelectedRow();
         lie = table.getSelectedColumn();
         tempstr = table.getValueAt(hang, lie);
@@ -195,7 +192,7 @@ public class BookStyleManage extends JFrame {
             // jpanel.updateUI();
             // System.out.println("连接关闭！");
           } catch (SQLException e1) {
-            e1.printStackTrace();
+            // e1.printStackTrace();
             try {
               connection.rollback();
             } catch (SQLException e2) {}

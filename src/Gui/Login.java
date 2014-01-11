@@ -22,7 +22,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-
 /**
  * 登录界面设置 目前有管理员登录和匿名登录及会员登录功能
  * 
@@ -55,13 +54,28 @@ public class Login extends JFrame {
     others.setBackground(bg);
     vip.setBackground(bg);
     admin.setBackground(bg);
+
+//    JPanel jpanel = new JPanel() {
+//         
+//        private static final long serialVersionUID = 1L;
+//
+//        @Override
+//        protected void paintComponent(Graphics g) {
+//            try {
+//                BufferedImage img = ImageIO.read(new File(this.getClass().getResource("1.jpg").getPath()));
+//                g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), null);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    };
     // jpassword.setSize(5,10);
     JPanel jpanel = new JPanel();
     JPanel jpanel1 = new JPanel();
     JPanel jpanel2 = new JPanel();
     JLabel username = new JLabel("     账户名：");
     JLabel password = new JLabel("     密码：");
-    // jpanel1.setLayout(new BorderLayout());
+     jpanel1.setLayout(new BorderLayout());
     jpassword.setEchoChar('*');
 
     ButtonGroup group = new ButtonGroup();
@@ -79,7 +93,6 @@ public class Login extends JFrame {
     jpanel2.add(jpassword);
     jpanel2.setBackground(bg);
     // jpanel.setLayout(new GridLayout(3,1));
-
     jpanel.add(welcome);
     jpanel.add(jpanel2);
     jpanel.add(jpanel1);
@@ -114,12 +127,13 @@ public class Login extends JFrame {
           connection.close();
           // System.out.println("连接关闭！");
         } catch (SQLException e1) {
-          JOptionPane.showMessageDialog(null, "您以游客身份登陆，权限不足", "提示", 1);
-          e1.printStackTrace();
+          JOptionPane.showMessageDialog(null, "sql异常", "提示", 1);
+          // e1.printStackTrace();
         }
 
         if (jtext.getText().equals("admin") && jpassword.getText().equals(passtemp)) {
           setVisible(false);
+          // dispose();
           MainGui frame;
           try {
             frame = new MainGui();
@@ -133,26 +147,26 @@ public class Login extends JFrame {
         } else {
           JOptionPane.showMessageDialog(null, "login failed！", "wraning", 1);
         }
-      } else if ((e.getSource() == login || e.getSource() == jpassword) && others.isSelected()) {
+      } else if ((e.getSource() == login || e.getSource() == jpassword) && others.isSelected()) {// 游客登录
         setVisible(false);
         JOptionPane.showMessageDialog(null, "您以游客身份登陆，权限不足", "提示", 1);
-        MainGui frame;
+        MainGui frame = null;
         try {
           frame = new MainGui();
-
           frame.setLocationRelativeTo(null);
           frame.setVisible(true);
         } catch (ClassNotFoundException e1) {
           JOptionPane.showMessageDialog(null, "服务器错误！", "提示", 2);
           // e1.printStackTrace();
         }
-        // frame.adduser.setEnabled(false);//本阶段是为了测试方便
-        // frame.addBook.setEnabled(false);
-        // frame.changePass.setEnabled(false);
-        // frame.checkOut.setEnabled(false);
-        // frame.checkIn.setEnabled(false);
-        // frame.record.setEnabled(false);
-        // frame.delete.setEnabled(false);//运行时注释回来
+        frame.adduser.setEnabled(false);// 本阶段是为了测试方便
+        frame.addBook.setEnabled(false);
+        frame.managebook.setEnabled(false);
+        frame.changepass.setEnabled(false);
+        frame.checkOut.setEnabled(false);
+        frame.checkIn.setEnabled(false);
+        frame.record.setEnabled(false);
+        frame.delete.setEnabled(false);// 运行时注释回来
       } else {// vip login
         String vippasstemp = null;// 用户密码
         String name = jtext.getText();

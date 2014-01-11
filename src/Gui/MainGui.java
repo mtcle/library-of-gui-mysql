@@ -11,6 +11,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -41,9 +42,10 @@ public class MainGui extends JFrame {
   JButton changepass = new JButton("修改密码");
   JButton exit = new JButton("退出");
   JPanel menu = new JPanel();
+  
   JTextArea jtext = new JTextArea(" 帮助信息", 30, 11);
   BookStack stack = new BookStack(10);// 初始化书架大小，后期设计应该归管理员操作
-  
+
   public MainGui() throws ClassNotFoundException {
     Class.forName("com.mysql.jdbc.Driver");
     setTitle("欢迎使用图书管理系统");
@@ -266,7 +268,7 @@ public class MainGui extends JFrame {
 
         try {
           String name = JOptionPane.showInputDialog(null, "输入借阅的图书名,支持模糊搜索", "提示", 3);
-          
+
           if (!name.equals("") && !name.equals(null)) {
             int s = 0;
             Class.forName("com.mysql.jdbc.Driver");
@@ -285,7 +287,7 @@ public class MainGui extends JFrame {
             if (s == 0) {
               JOptionPane.showMessageDialog(null, "该图书不存在，请检查拼写是否错误！", "提示", 1);
             } else {
-               String[][] temp = null;
+              String[][] temp = null;
               temp = stack.checkOut(name);
               ChoiceDialogue a = new ChoiceDialogue();
               a.viewTable(temp);

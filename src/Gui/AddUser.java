@@ -21,7 +21,7 @@ public class AddUser {
       ResultSet getpass;
       getpass = statement.executeQuery("select count(*) from user where id='"+name+"'");
       while (getpass.next()) {
-        sum = getpass.getInt(1);        
+        sum = getpass.getInt(1);         
       }
       connection.close();
     } catch (SQLException e1) {

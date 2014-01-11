@@ -47,11 +47,11 @@ public class VipManage extends JFrame {
     setResizable(false);
     setSize(600, 400);
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-    setLocationRelativeTo(null);  
+    setLocationRelativeTo(null);
   }
-  
+
   private class ButtonListener implements ActionListener {
-    
+
     public void actionPerformed(ActionEvent e) {
       try {
         Class.forName("com.mysql.jdbc.Driver");
@@ -108,12 +108,10 @@ public class VipManage extends JFrame {
           try {
             if (!username.equals("")) {
               String pass = JOptionPane.showInputDialog("输入密码");
-              if (!pass.equals(""))
-              {
-                user.adduser(username, pass);                
+              if (!pass.equals("")) {
+                user.adduser(username, pass);
                 viewuser.doClick();
-              }
-              else
+              } else
                 JOptionPane.showMessageDialog(null, "密码不能为空", "提示", 1);
             } else {
               JOptionPane.showMessageDialog(null, "用户名不能为空", "提示", 1);
@@ -128,10 +126,11 @@ public class VipManage extends JFrame {
         try {
           user.deluser(username);
         } catch (SQLException e1) {
-          JOptionPane.showMessageDialog(null, "服务器异常，添加失败！", "提示", 1);        }
+          JOptionPane.showMessageDialog(null, "服务器异常，添加失败！", "提示", 1);
+        }
         viewuser.doClick();
       } else {// 返回
-//        setVisible(false);
+      // setVisible(false);
         dispose();
       }
     }

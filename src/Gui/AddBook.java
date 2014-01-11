@@ -38,7 +38,7 @@ public class AddBook extends JFrame {
   JButton back = new JButton("返回");
   String gethead = new String();
   private String name;
-  private String hd="";
+  private String hd = "";
   String[] head = null;
   String[] headlist = null;
   Font font = new Font("Serif", Font.BOLD, 25);
@@ -76,8 +76,8 @@ public class AddBook extends JFrame {
       connection.close();
       // System.out.println("连接关闭！");
     } catch (SQLException e1) {
-//      System.out.println("sql wrong!");
-//      e1.printStackTrace();
+      // System.out.println("sql wrong!");
+      // e1.printStackTrace();
     }
     final JList<String> list = new JList<String>(headlist);
     group.add(normal);
@@ -137,17 +137,18 @@ public class AddBook extends JFrame {
         setVisible(false);
       } else {
         try {
-          if (!hd.equals(""))
-          {if (normal.isSelected()) {
-            new Book(name, hd, 0);
-            setVisible(false);
+          if (!hd.equals("")) {
+            if (normal.isSelected()) {
+              new Book(name, hd, 0);
+              setVisible(false);
+            } else {
+              new Book(name, hd, 1);
+              setVisible(false);
+            }
           } else {
-            new Book(name, hd, 1);
-            setVisible(false);}}
-          else{
             JOptionPane.showMessageDialog(null, "请选择图书类别！", "提示", 1);
-          }         
-        } catch (ClassNotFoundException | SQLException e1) {        }
+          }
+        } catch (ClassNotFoundException | SQLException e1) {}
       }
     }
   }

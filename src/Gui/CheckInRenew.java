@@ -136,7 +136,7 @@ public class CheckInRenew extends JFrame {
                   + Login.username + "' and checkin is null");
           while (str.next()) {
             getcheckout = str.getDate(2);// 借出日期
-            getplan = str.getDate(3);           
+            getplan = str.getDate(3);
           }
           {
             Statement statement3 = connection.createStatement();
@@ -248,7 +248,7 @@ public class CheckInRenew extends JFrame {
             } finally {
               connection.close();
             }
-          }        
+          }
         } catch (SQLException e1) {
           JOptionPane.showMessageDialog(null, "服务器异常！", "提示", 1);
           // e1.printStackTrace()
