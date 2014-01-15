@@ -21,6 +21,12 @@ import javax.swing.JTextArea;
 
 import model.BookStack;
 
+/**
+ * 该程序的主界面包括借阅图书的全部功能 针对不同用户权限进行了不同设置
+ * 
+ * @author mtcle
+ * @version 1.0
+ */
 public class MainGui extends JFrame {
   private static final long serialVersionUID = 1745017706827567279L;
   Color bg = new Color(224, 255, 255);
@@ -42,10 +48,15 @@ public class MainGui extends JFrame {
   JButton changepass = new JButton("修改密码");
   JButton exit = new JButton("退出");
   JPanel menu = new JPanel();
-  
+
   JTextArea jtext = new JTextArea(" 帮助信息", 30, 11);
   BookStack stack = new BookStack(10);// 初始化书架大小，后期设计应该归管理员操作
 
+  /**
+   * 主操作界面
+   * 通过增加重写的buttonlisteneraction和mouselistener行为进行操作处理 
+   * @throws ClassNotFoundException
+   */
   public MainGui() throws ClassNotFoundException {
     Class.forName("com.mysql.jdbc.Driver");
     setTitle("欢迎使用图书管理系统");
@@ -174,11 +185,11 @@ public class MainGui extends JFrame {
 
     JLabel label = new JLabel("<html>提<br>示<br>信<br>息");
     label.setFont(font);
-    JLabel label0 = new JLabel("<html><br><br>欢<br>迎<br>您<br>使<br>用<br>该<br>借<br>阅<br>系<br>统");
+    JLabel label0 = new JLabel("<html><br><br>欢<br>迎<br>您<br>使<br>用<br>图<br>书<br>借<br>阅<br>系<br>统");//添加html标签实现竖着排列
     label0.setForeground(Color.GRAY);
     label.setForeground(Color.CYAN);
     label0.setFont(font0);
-    JPanel temp = new JPanel();
+
     JPanel aa = new JPanel();
     JPanel bb = new JPanel();
 
@@ -190,7 +201,7 @@ public class MainGui extends JFrame {
     jtext.setSize(80, 100);
     bb.add(jtext);
     // aa.setBackground(bg);
-
+    JPanel temp = new JPanel();
     temp.setLayout(new GridLayout(1, 2));
     temp.add(menu);
     temp.add(aa);

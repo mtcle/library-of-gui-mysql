@@ -18,11 +18,12 @@ import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+/**
+ * 通过将所有图书列出来供管理员进行选择删除
+ * 
+ * @author mtcle
+ */
 public class DeleteBook extends JFrame {
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = 5902371180205079105L;
   private String[] name = {"图书编号", "图书级别", "借出次数"};
   // private JTable jtable=new JTable(null,name);
@@ -32,7 +33,8 @@ public class DeleteBook extends JFrame {
   private int size = 0;
   private String id = "";
 
-  public DeleteBook() throws ClassNotFoundException, SQLException {
+  public DeleteBook() throws ClassNotFoundException, SQLException {// 删除图书的方法
+    /* 只能删除在管的图书 */
     setLayout(new GridLayout(2, 1));
     setSize(600, 400);
     setVisible(true);

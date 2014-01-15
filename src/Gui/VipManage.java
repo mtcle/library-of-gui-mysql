@@ -43,9 +43,10 @@ public class VipManage extends JFrame {
     jpanel.add(backmenu);
     add(jpanel);
     setTitle("会员管理平台");
-    setVisible(true);
+    
     setResizable(false);
     setSize(600, 400);
+    setVisible(true);
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     setLocationRelativeTo(null);
   }

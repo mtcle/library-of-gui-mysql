@@ -25,6 +25,12 @@ import javax.swing.event.ListSelectionListener;
 
 import model.Book;
 
+/**
+ * 添加图书的类,主要是添加图书包括图书的图书类型和藏书级别,针对图书区号是和图书类别进行绑定,某一类图书存在某一个区域内,在该区域内有内部编号
+ * 读取到区号进行处理,对新增的图书进行区号,编号的设置
+ * 系统会通过读取sql数据库读到当前的编号位置,自动追加编号;
+ * 系统用到了Book类,依赖bookmgr工程里面的Book类来产生一个新图书
+ * */
 public class AddBook extends JFrame {
 
   private static final long serialVersionUID = -4973375427174316669L;
@@ -39,6 +45,7 @@ public class AddBook extends JFrame {
   String gethead = new String();
   private String name;
   private String hd = "";
+  private String quhao = "";
   String[] head = null;
   String[] headlist = null;
   Font font = new Font("Serif", Font.BOLD, 25);
@@ -62,7 +69,7 @@ public class AddBook extends JFrame {
       }
       Statement statement = connection.createStatement();
       ResultSet getpass;
-      getpass = statement.executeQuery("select head,bookstyle from bookhead");
+      getpass = statement.executeQuery("select head,bookstyle,number from bookhead");
       int i = 0;
       String[] temp = new String[s];
       String[] temp2 = new String[s];
@@ -91,7 +98,25 @@ public class AddBook extends JFrame {
 
       @Override
       public void valueChanged(ListSelectionEvent e) {
-        hd = head[list.getSelectedIndex()];
+        hd = head[list.getSelectedIndex()];//
+        try {
+          Connection connection =
+              DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
+                  "root", "121126");
+          Statement statement = connection.createStatement();
+          ResultSet getquhao;
+          getquhao = statement.executeQuery("select number from bookhead where head = '" + hd + "'");
+          while (getquhao.next()) {
+            if (getquhao.getString(1).length() == 1)
+              quhao = "0" + getquhao.getString(1);//为了美观对于区号为个位的前端补一个零
+            else
+              quhao = getquhao.getString(1);
+          }          
+          connection.close();
+        } catch (SQLException e1) {
+          System.out.println("sql wrong!");
+          // e1.printStackTrace();
+        }
       }
     });
     ButtonListener l = new ButtonListener();
@@ -101,8 +126,10 @@ public class AddBook extends JFrame {
     JLabel biaoti = new JLabel("图书详细类型选择");
     biaoti.setFont(font);
     JLabel label = new JLabel("图书类别:");
+    JLabel label1 = new JLabel("区号");
     JLabel label2 = new JLabel("  藏书级别:");
     label2.setFont(font2);
+    label1.setFont(font2);
     label.setFont(font2);
     jpanel.setLayout(new FlowLayout(10, 30, 10));
     jpanel.add(label);
@@ -122,7 +149,7 @@ public class AddBook extends JFrame {
     add(jpanel1);
     setVisible(true);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    int xCoordinate = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+    int xCoordinate = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();// 获取当前屏幕尺寸,进行设置居中
     int yCoordinate = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
     setLocation((int) (xCoordinate - 550) / 2, (int) (yCoordinate - 400) / 2);
     setResizable(false);
@@ -139,16 +166,18 @@ public class AddBook extends JFrame {
         try {
           if (!hd.equals("")) {
             if (normal.isSelected()) {
-              new Book(name, hd, 0);
+              new Book(name, hd,quhao, 0);// 针对不同藏书级别设置的图书类别0代表普通,1代表珍藏
               setVisible(false);
             } else {
-              new Book(name, hd, 1);
+              new Book(name, hd,quhao, 1);
               setVisible(false);
             }
           } else {
             JOptionPane.showMessageDialog(null, "请选择图书类别！", "提示", 1);
           }
-        } catch (ClassNotFoundException | SQLException e1) {}
+        } catch (ClassNotFoundException | SQLException e1) {
+          System.out.println(e1);
+        }// 异常处理
       }
     }
   }

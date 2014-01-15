@@ -71,6 +71,7 @@ public class BookStyleManage extends JFrame {
       Class.forName("com.mysql.jdbc.Driver");
     } catch (ClassNotFoundException e2) {
       // e2.printStackTrace();
+      JOptionPane.showMessageDialog(null, "数据库读取错误！", "提示", 2);
     }
     try {
       Connection connection =
@@ -116,7 +117,7 @@ public class BookStyleManage extends JFrame {
     }
 
     final JTable table = new JTable(getstr, name);
-    table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+    table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {//对jtable添加一个选择监听
 
       @Override
       public void valueChanged(ListSelectionEvent e) {
@@ -156,7 +157,7 @@ public class BookStyleManage extends JFrame {
             Statement statement = connection.createStatement();
             String[] header = {"head", "bookstyle", "zujin", "fajin"};
             statement.execute("update bookhead set " + header[lie] + " = '" + input
-                + "' where head='" + temp[hang][0] + "'");// ///////+++++++++++++++
+                + "' where head='" + temp[hang][0] + "'");//
             connection.close();
             JOptionPane.showMessageDialog(null, "修改成功", "提示", 1);
             dispose();
@@ -246,8 +247,7 @@ public class BookStyleManage extends JFrame {
                             "jdbc:mysql://localhost/book_mgr?characterEncoding=utf8", "root",
                             "121126");
                   } catch (SQLException e2) {
-                    // TODO Auto-generated catch block
-                    e2.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "数据库读取错误！", "提示", 2);
                   }
                   try {
                     // System.out.println("连接成功！");
@@ -263,7 +263,7 @@ public class BookStyleManage extends JFrame {
                     new BookStyleManage();
                     // System.out.println("连接关闭！");
                   } catch (SQLException e1) {
-                    JOptionPane.showMessageDialog(null, "数据库有问题了！", "提示", 1);
+                    JOptionPane.showMessageDialog(null, "数据库有问题了！", "提示", 2);
                     // e1.printStackTrace();
                     try {
                       connection.rollback();

@@ -28,7 +28,7 @@ public class CheckInRenew extends JFrame {
    */
   private static final long serialVersionUID = 5788798799270995381L;
   /**
-   * @param 主要是还书是选择图书的归还界面
+   * @param 主要是还书时选择图书的归还界面 因为一人可以借阅多本图书可以有选择的续借或者归还某一本图书
    */
   private String[] name = {"序号", "图书编号", "图书名字", "借出日期", "应还日期"};
   // private JTable jtable=new JTable(null,name);
@@ -54,7 +54,6 @@ public class CheckInRenew extends JFrame {
               + "' and checkin is null");
       while (getpass.next()) {
         s = getpass.getInt(1);
-        // System.out.println("pass"+passtemp);
       }
       connection.createStatement();
       ResultSet getbook =
@@ -74,8 +73,7 @@ public class CheckInRenew extends JFrame {
       connection.close();
       // System.out.println("连接关闭！");
     } catch (SQLException e1) {
-      JOptionPane.showMessageDialog(null, "sql异常！", "提示", 1);
-      // e1.printStackTrace();
+      JOptionPane.showMessageDialog(null, "sql异常！", "提示", 2);
     }
 
     setLayout(new GridLayout(2, 1));
@@ -87,7 +85,6 @@ public class CheckInRenew extends JFrame {
     jtable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       @Override
       public void valueChanged(ListSelectionEvent e) {
-        // System.out.println(tempbook[jtable.getSelectedRow()][1]);
         getbookid = tempbook[jtable.getSelectedRow()][1];
       }
     });
@@ -110,8 +107,7 @@ public class CheckInRenew extends JFrame {
           dispose();
           new MainGui();
         } catch (ClassNotFoundException e1) {
-          // TODO Auto-generated catch block
-          // e1.printStackTrace();
+          JOptionPane.showMessageDialog(null, "数据库读取错误！", "提示", 2);
         }
       } else if (e.getSource() == checkin) {
         // String name = JOptionPane.showInputDialog(null, "输入图书名", "提示", 3);
@@ -206,9 +202,7 @@ public class CheckInRenew extends JFrame {
           JOptionPane.showMessageDialog(null, "服务器异常", "提示", 2);
           // e1.printStackTrace();
 
-        } catch (Exception e1) {
-          // e1.printStackTrace();
-        }
+        } catch (Exception e1) {}
       } else {// 续借
         long getdate = 0l;
         long getplan = 0l;

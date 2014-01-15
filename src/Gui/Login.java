@@ -23,9 +23,10 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 /**
- * 登录界面设置 目前有管理员登录和匿名登录及会员登录功能
- * 
+ * Login类是登录界面设置 目前有管理员登录和匿名登录及会员登录功能
+ * 不同的登录级别有不同的权限,管理员和会员都可以修改密码
  * @author mtcle
+ * @version 1.0
  */
 public class Login extends JFrame {
 
@@ -41,41 +42,29 @@ public class Login extends JFrame {
   Font font = new Font("Serif", Font.BOLD, 25);
   Font font2 = new Font("隶书", Font.BOLD, 15);
 
-  public Login() throws ClassNotFoundException, SQLException {
-
-
-
+  /**
+   * Login()方法主要是登录界面的设置以及用户的验证
+   * @param  登录名:username
+   * @author mtcle
+   * @throws SQLException
+   * @throws ClassNotFoundException
+   */
+  public Login() throws ClassNotFoundException, SQLException {    
     login.addActionListener(new ButtonListener());// 监听绑定
     jpassword.addActionListener(new ButtonListener());
-    JLabel welcome = new JLabel("欢迎使用图书借阅系统");
+    JLabel welcome = new JLabel("请登录");
     welcome.setFont(font2);
     // jtext.setSize(5,10);
     login.setBackground(bg);
     others.setBackground(bg);
     vip.setBackground(bg);
-    admin.setBackground(bg);
-
-//    JPanel jpanel = new JPanel() {
-//         
-//        private static final long serialVersionUID = 1L;
-//
-//        @Override
-//        protected void paintComponent(Graphics g) {
-//            try {
-//                BufferedImage img = ImageIO.read(new File(this.getClass().getResource("1.jpg").getPath()));
-//                g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), null);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    };
-    // jpassword.setSize(5,10);
+    admin.setBackground(bg);   
     JPanel jpanel = new JPanel();
     JPanel jpanel1 = new JPanel();
     JPanel jpanel2 = new JPanel();
     JLabel username = new JLabel("     账户名：");
     JLabel password = new JLabel("     密码：");
-     jpanel1.setLayout(new BorderLayout());
+    jpanel1.setLayout(new BorderLayout());
     jpassword.setEchoChar('*');
 
     ButtonGroup group = new ButtonGroup();
@@ -106,7 +95,11 @@ public class Login extends JFrame {
     setResizable(false);
     Class.forName("com.mysql.jdbc.Driver");
   }
-
+  /**
+   * 实现监听
+   * @category 内部类
+   * @author mtcle
+   */
   private class ButtonListener implements ActionListener {
     @SuppressWarnings("deprecation")
     public void actionPerformed(ActionEvent e) {
@@ -122,13 +115,11 @@ public class Login extends JFrame {
           getpass = statement.executeQuery("select pass from user where id='admin'");
           while (getpass.next()) {
             passtemp = getpass.getString(1);
-            // System.out.println("pass"+passtemp);
           }
           connection.close();
           // System.out.println("连接关闭！");
         } catch (SQLException e1) {
-          JOptionPane.showMessageDialog(null, "sql异常", "提示", 1);
-          // e1.printStackTrace();
+          JOptionPane.showMessageDialog(null, "sql异常", "提示", 1);        
         }
 
         if (jtext.getText().equals("admin") && jpassword.getText().equals(passtemp)) {
@@ -141,7 +132,6 @@ public class Login extends JFrame {
             frame.setVisible(true);
           } catch (ClassNotFoundException e1) {
             JOptionPane.showMessageDialog(null, "服务器错误！", "提示", 2);
-            // e1.printStackTrace();
           }
           username = jtext.getText();
         } else {
@@ -177,15 +167,13 @@ public class Login extends JFrame {
                   "root", "121126");
           Statement statement = connection.createStatement();
           ResultSet getpass;
-          getpass = statement.executeQuery("select pass from user where id = '" + name + "'");
-
+          getpass = statement.executeQuery("select pass from user where id = '" + name + "'");//将java变量通过'"+变量+"'形式参与sql语句中
           while (getpass.next()) {
             vippasstemp = getpass.getString(1);
           }
           connection.close();
         } catch (SQLException e1) {
-          System.out.println("sql wrong!");
-          // e1.printStackTrace();
+          JOptionPane.showMessageDialog(null, "sql出错！", "警告", 2);
         }
         if (pass.equals(vippasstemp)) {
           setVisible(false);

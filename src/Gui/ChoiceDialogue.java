@@ -25,6 +25,7 @@ import javax.swing.event.ListSelectionListener;
 public class ChoiceDialogue extends JFrame {
   /**
    * 为了解决重名图书可以被用户选择的问题
+   * 将某一本图书,重名的都列出来让用户选择
    */
   private static final long serialVersionUID = 470074714744646645L;
   JButton checkout = new JButton("借阅");
@@ -46,6 +47,8 @@ public class ChoiceDialogue extends JFrame {
   }
 
   public void viewTable(final Object[][] a) {
+    /**
+     * 对表格增加鼠标选择监听,监听用户选择的是哪一本图书*/
     final JTable jtable = new JTable(a, name);
     jtable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {// 添加匿名监听类，负责监鼠标选择
 
@@ -80,7 +83,7 @@ public class ChoiceDialogue extends JFrame {
         JOptionPane.showMessageDialog(null, "数据库出错！", "提示", 1);
         // e2.printStackTrace();
       }
-      if (e.getSource() == b) {
+      if (e.getSource() == b) {//返回按钮
         setVisible(false);
       } else {// 借书操作
         try {
