@@ -6,11 +6,8 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,13 +20,13 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import tool.SqlTool;
+
 import model.Book;
 
 /**
- * 添加图书的类,主要是添加图书包括图书的图书类型和藏书级别,针对图书区号是和图书类别进行绑定,某一类图书存在某一个区域内,在该区域内有内部编号
- * 读取到区号进行处理,对新增的图书进行区号,编号的设置
- * 系统会通过读取sql数据库读到当前的编号位置,自动追加编号;
- * 系统用到了Book类,依赖bookmgr工程里面的Book类来产生一个新图书
+ * 添加图书的类,主要是添加图书包括图书的图书类型和藏书级别,针对图书区号是和图书类别进行绑定,某一类图书存在某一个区域内,在该区域内有内部编号 读取到区号进行处理,对新增的图书进行区号,编号的设置
+ * 系统会通过读取sql数据库读到当前的编号位置,自动追加编号; 系统用到了Book类,依赖bookmgr工程里面的Book类来产生一个新图书
  * */
 public class AddBook extends JFrame {
 
@@ -37,54 +34,43 @@ public class AddBook extends JFrame {
   /**
    * @param addbook from gui
    */
+  SqlTool tool = new SqlTool();
   JRadioButton normal = new JRadioButton("普通", true);
   JRadioButton vip = new JRadioButton("珍藏");
   ButtonGroup group = new ButtonGroup();
   JButton select = new JButton("添加");
   JButton back = new JButton("返回");
   String gethead = new String();
-  private String name;
-  private String hd = "";
-  private String quhao = "";
-  String[] head = null;
+  private String name;//图书名字
+  private String hd = "";//图书类型代号
+  private String quhao = "";//图书应该在图书管的位置区号
+  String[] head = null;//现有图书类型数组
   String[] headlist = null;
   Font font = new Font("Serif", Font.BOLD, 25);
   Font font2 = new Font("Serif", Font.BOLD, 15);
 
-  public AddBook(String name) throws ClassNotFoundException {
+  public AddBook(String name) {
     this.name = name;
-
-    int s = 0;
-    Class.forName("com.mysql.jdbc.Driver");
+    String sql1 = "select count(*) from bookhead";
+    String sql2 = "select head,bookstyle,number from bookhead";
+    int size = 0;// 数组大小
     try {
-      Connection connection =
-          DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
-              "root", "121126");
-      // System.out.println("连接成功！");
-      Statement statement1 = connection.createStatement();
-      ResultSet getint;
-      getint = statement1.executeQuery("select count(*) from bookhead");
-      while (getint.next()) {
-        s = getint.getInt(1);
-      }
-      Statement statement = connection.createStatement();
-      ResultSet getpass;
-      getpass = statement.executeQuery("select head,bookstyle,number from bookhead");
+      size = tool.getRowOfStatement(sql1);
+      ResultSet getBookInfo;
+      getBookInfo = tool.getQueryStatement(sql2);
       int i = 0;
-      String[] temp = new String[s];
-      String[] temp2 = new String[s];
-      while (getpass.next()) {
-        temp[i] = getpass.getString(1);
-        temp2[i] = getpass.getString(2);
+      String[] temp = new String[size];
+      String[] temp2 = new String[size];
+      while (getBookInfo.next()) {
+        temp[i] = getBookInfo.getString(1);
+        temp2[i] = getBookInfo.getString(2);
         i++;
       }
       head = temp;
       headlist = temp2;
-      connection.close();
-      // System.out.println("连接关闭！");
+      tool.closeConnection();
     } catch (SQLException e1) {
       // System.out.println("sql wrong!");
-      // e1.printStackTrace();
     }
     final JList<String> list = new JList<String>(headlist);
     group.add(normal);
@@ -99,23 +85,18 @@ public class AddBook extends JFrame {
       @Override
       public void valueChanged(ListSelectionEvent e) {
         hd = head[list.getSelectedIndex()];//
+        String sql = "select number from bookhead where head = '" + hd + "'";
         try {
-          Connection connection =
-              DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
-                  "root", "121126");
-          Statement statement = connection.createStatement();
-          ResultSet getquhao;
-          getquhao = statement.executeQuery("select number from bookhead where head = '" + hd + "'");
+          ResultSet getquhao = tool.getQueryStatement(sql);
           while (getquhao.next()) {
             if (getquhao.getString(1).length() == 1)
-              quhao = "0" + getquhao.getString(1);//为了美观对于区号为个位的前端补一个零
+              quhao = "0" + getquhao.getString(1);// 为了美观对于区号为个位的前端补一个零
             else
               quhao = getquhao.getString(1);
-          }          
-          connection.close();
+          }
+          tool.closeConnection();
         } catch (SQLException e1) {
           System.out.println("sql wrong!");
-          // e1.printStackTrace();
         }
       }
     });
@@ -163,21 +144,17 @@ public class AddBook extends JFrame {
       if (e.getSource() == back) {
         setVisible(false);
       } else {
-        try {
-          if (!hd.equals("")) {
-            if (normal.isSelected()) {
-              new Book(name, hd,quhao, 0);// 针对不同藏书级别设置的图书类别0代表普通,1代表珍藏
-              setVisible(false);
-            } else {
-              new Book(name, hd,quhao, 1);
-              setVisible(false);
-            }
+        if (!hd.equals("")) {
+          if (normal.isSelected()) {
+            new Book(name, hd, quhao, 0);// 针对不同藏书级别设置的图书类别0代表普通,1代表珍藏
+            setVisible(false);
           } else {
-            JOptionPane.showMessageDialog(null, "请选择图书类别！", "提示", 1);
+            new Book(name, hd, quhao, 1);
+            setVisible(false);
           }
-        } catch (ClassNotFoundException | SQLException e1) {
-          System.out.println(e1);
-        }// 异常处理
+        } else {
+          JOptionPane.showMessageDialog(null, "请选择图书类别！", "提示", 1);
+        }
       }
     }
   }

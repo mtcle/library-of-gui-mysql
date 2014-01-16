@@ -2,17 +2,15 @@ package Gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+
+import tool.SqlTool;
 
 public class VipManage extends JFrame {
 
@@ -22,6 +20,7 @@ public class VipManage extends JFrame {
   JButton viewuser = new JButton("浏览会员");
   JButton backmenu = new JButton("返回菜单");
   JTextArea showplace = new JTextArea();
+  SqlTool tool = new SqlTool();
 
   public VipManage() {
     JPanel jpanel = new JPanel();
@@ -43,7 +42,6 @@ public class VipManage extends JFrame {
     jpanel.add(backmenu);
     add(jpanel);
     setTitle("会员管理平台");
-    
     setResizable(false);
     setSize(600, 400);
     setVisible(true);
@@ -54,57 +52,28 @@ public class VipManage extends JFrame {
   private class ButtonListener implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
-      try {
-        Class.forName("com.mysql.jdbc.Driver");
-      } catch (ClassNotFoundException e2) {
-        // TODO Auto-generated catch block
-        // e2.printStackTrace();
-      }
-
       AddUser user = new AddUser();
       StringBuilder str = new StringBuilder();
       if (e.getSource() == viewuser) {
+        tool.getQueryStatement("select * from user");
         try {
-          Connection connection =
-              DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
-                  "root", "121126");
-          // System.out.println("连接成功！");
-          Statement statement = connection.createStatement();
-          ResultSet getpass;
-          getpass = statement.executeQuery("select * from user");
-          while (getpass.next()) {
-
-            // System.out.println("pass"+passtemp);
-            str.append("序号：" + getpass.getString(1) + "\t\tid:" + getpass.getString(2) + "\t"
-                + "密码：" + getpass.getString(3));
+          ResultSet getUser = tool.getQueryStatement("select * from user");
+          while (getUser.next()) {
+            str.append("序号：" + getUser.getString(1) + "\t\tid:" + getUser.getString(2) + "\t"
+                + "密码：" + getUser.getString(3));
             str.append("\n");
           }
-          connection.close();
-          // System.out.println("连接关闭！");
-        } catch (SQLException e1) {}
+          tool.closeConnection();
+        } catch (SQLException e1) {
+          JOptionPane.showMessageDialog(null, "sql错误", "提示", 2);
+        }
         showplace.setText(str.toString());
       } else if (e.getSource() == adduser) {
 
         String username = "";
         username = JOptionPane.showInputDialog("输入用户名");
-        int sum = 0;
-        try {
-          Connection connection =
-              DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
-                  "root", "121126");
-          // System.out.println("连接成功！");
-          Statement statement = connection.createStatement();
-          ResultSet getpass;
-          getpass = statement.executeQuery("select count(*) from user where id='" + username + "'");
-          while (getpass.next()) {
-            sum = getpass.getInt(1);
-          }
-          connection.close();
-          // System.out.println("连接关闭！");
-        } catch (SQLException e1) {
-          JOptionPane.showMessageDialog(null, "sql错误", "提示", 2);
-          e1.printStackTrace();
-        }
+        int sum = 0;// 标记当前会员数量
+        sum = tool.getRowOfStatement("select count(*) from user where id='" + username + "'");
         if (sum == 0) {
           try {
             if (!username.equals("")) {
@@ -117,21 +86,16 @@ public class VipManage extends JFrame {
             } else {
               JOptionPane.showMessageDialog(null, "用户名不能为空", "提示", 1);
             }
-          } catch (Exception e1) {}
+          } catch (NullPointerException e1) {}
         } else {
           JOptionPane.showMessageDialog(null, "该用户名已经存在", "提示", 1);
         }
       } else if (e.getSource() == deluser) {// 删除会员
         viewuser.doClick();// 触发一次view按钮的button事件
         String username = JOptionPane.showInputDialog("输入用户名");
-        try {
-          user.deluser(username);
-        } catch (SQLException e1) {
-          JOptionPane.showMessageDialog(null, "服务器异常，添加失败！", "提示", 1);
-        }
+        user.deluser(username);
         viewuser.doClick();
       } else {// 返回
-      // setVisible(false);
         dispose();
       }
     }

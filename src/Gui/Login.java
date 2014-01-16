@@ -6,12 +6,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,14 +18,16 @@ import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+import tool.SqlTool;
+
 /**
- * Login类是登录界面设置 目前有管理员登录和匿名登录及会员登录功能
- * 不同的登录级别有不同的权限,管理员和会员都可以修改密码
+ * Login类是登录界面设置 目前有管理员登录和匿名登录及会员登录功能 不同的登录级别有不同的权限,管理员和会员都可以修改密码
+ * 
  * @author mtcle
  * @version 1.0
  */
 public class Login extends JFrame {
-
+  SqlTool tool = new SqlTool();
   Color bg = new Color(224, 255, 255);
   private static final long serialVersionUID = -5032612745381818733L;
   JButton login = new JButton("登录");
@@ -44,12 +42,11 @@ public class Login extends JFrame {
 
   /**
    * Login()方法主要是登录界面的设置以及用户的验证
-   * @param  登录名:username
+   * 
+   * @param 登录名:username
    * @author mtcle
-   * @throws SQLException
-   * @throws ClassNotFoundException
    */
-  public Login() throws ClassNotFoundException, SQLException {    
+  public Login() {
     login.addActionListener(new ButtonListener());// 监听绑定
     jpassword.addActionListener(new ButtonListener());
     JLabel welcome = new JLabel("请登录");
@@ -58,7 +55,7 @@ public class Login extends JFrame {
     login.setBackground(bg);
     others.setBackground(bg);
     vip.setBackground(bg);
-    admin.setBackground(bg);   
+    admin.setBackground(bg);
     JPanel jpanel = new JPanel();
     JPanel jpanel1 = new JPanel();
     JPanel jpanel2 = new JPanel();
@@ -93,46 +90,37 @@ public class Login extends JFrame {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo(null);
     setResizable(false);
-    Class.forName("com.mysql.jdbc.Driver");
   }
+
   /**
    * 实现监听
+   * 
    * @category 内部类
    * @author mtcle
    */
   private class ButtonListener implements ActionListener {
-    @SuppressWarnings("deprecation")
     public void actionPerformed(ActionEvent e) {
       if ((e.getSource() == login || e.getSource() == jpassword) && admin.isSelected()) {// 管理员登陆
         String passtemp = "";
         try {
-          Connection connection =
-              DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
-                  "root", "121126");
-          // System.out.println("连接成功！");
-          Statement statement = connection.createStatement();
-          ResultSet getpass;
-          getpass = statement.executeQuery("select pass from user where id='admin'");
-          while (getpass.next()) {
-            passtemp = getpass.getString(1);
+          String sql = "select pass from user where id='admin'";
+          ResultSet result = tool.getQueryStatement(sql);
+          while (result.next()) {
+            passtemp = result.getString(1);
           }
-          connection.close();
-          // System.out.println("连接关闭！");
-        } catch (SQLException e1) {
-          JOptionPane.showMessageDialog(null, "sql异常", "提示", 1);        
+          tool.closeConnection();
+        } catch (SQLException e2) {
+          System.out.println(e2);
         }
 
-        if (jtext.getText().equals("admin") && jpassword.getText().equals(passtemp)) {
+        if (jtext.getText().equals("admin")
+            && tool.getStringOfPassword(jpassword.getPassword()).equals(passtemp)) {// 调用了工具类的密码转换方法
           setVisible(false);
           // dispose();
           MainGui frame;
-          try {
-            frame = new MainGui();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-          } catch (ClassNotFoundException e1) {
-            JOptionPane.showMessageDialog(null, "服务器错误！", "提示", 2);
-          }
+          frame = new MainGui();
+          frame.setLocationRelativeTo(null);
+          frame.setVisible(true);
           username = jtext.getText();
         } else {
           JOptionPane.showMessageDialog(null, "login failed！", "wraning", 1);
@@ -141,14 +129,9 @@ public class Login extends JFrame {
         setVisible(false);
         JOptionPane.showMessageDialog(null, "您以游客身份登陆，权限不足", "提示", 1);
         MainGui frame = null;
-        try {
-          frame = new MainGui();
-          frame.setLocationRelativeTo(null);
-          frame.setVisible(true);
-        } catch (ClassNotFoundException e1) {
-          JOptionPane.showMessageDialog(null, "服务器错误！", "提示", 2);
-          // e1.printStackTrace();
-        }
+        frame = new MainGui();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
         frame.adduser.setEnabled(false);// 本阶段是为了测试方便
         frame.addBook.setEnabled(false);
         frame.managebook.setEnabled(false);
@@ -160,37 +143,29 @@ public class Login extends JFrame {
       } else {// vip login
         String vippasstemp = null;// 用户密码
         String name = jtext.getText();
-        String pass = jpassword.getText();
+        String pass = tool.getStringOfPassword(jpassword.getPassword());
+        String sql = "select pass from user where id = '" + name + "'";
         try {
-          Connection connection =
-              DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
-                  "root", "121126");
-          Statement statement = connection.createStatement();
-          ResultSet getpass;
-          getpass = statement.executeQuery("select pass from user where id = '" + name + "'");//将java变量通过'"+变量+"'形式参与sql语句中
-          while (getpass.next()) {
-            vippasstemp = getpass.getString(1);
+          ResultSet result = tool.getQueryStatement(sql);
+          while (result.next()) {
+            vippasstemp = result.getString(1);
           }
-          connection.close();
         } catch (SQLException e1) {
           JOptionPane.showMessageDialog(null, "sql出错！", "警告", 2);
         }
+        tool.closeConnection();
         if (pass.equals(vippasstemp)) {
           setVisible(false);
           JOptionPane.showMessageDialog(null, "您是尊贵的vip！", "提示", 1);
           username = jtext.getText();
           MainGui frame;
-          try {
-            frame = new MainGui();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-            frame.adduser.setEnabled(false);
-            frame.addBook.setEnabled(false);
-            frame.delete.setEnabled(false);
-            frame.managebook.setEnabled(false);
-          } catch (ClassNotFoundException e1) {
-            JOptionPane.showMessageDialog(null, "服务器连接失败！", "wraning", 2);
-          }
+          frame = new MainGui();
+          frame.setLocationRelativeTo(null);
+          frame.setVisible(true);
+          frame.adduser.setEnabled(false);
+          frame.addBook.setEnabled(false);
+          frame.delete.setEnabled(false);
+          frame.managebook.setEnabled(false);
         } else {
           JOptionPane.showMessageDialog(null, "login failed！", "wraning", 2);
         }

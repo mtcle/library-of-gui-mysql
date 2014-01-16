@@ -6,18 +6,16 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+
+import tool.SqlTool;
 
 import model.BookStack;
 
@@ -32,14 +30,13 @@ public class MainGui extends JFrame {
   Color bg = new Color(224, 255, 255);
   Font font = new Font("Serif", Font.ITALIC, 20);
   Font font0 = new Font("Serif", Font.BOLD, 30);
-
+  SqlTool tool = new SqlTool();
   /**
    * @param this is the main GUI menu
    */
   JButton viewBook = new JButton("浏览图书");
   JButton addBook = new JButton("添加图书");
   JButton checkOut = new JButton("借书");
-  // JButton renew = new JButton("续借");
   JButton checkIn = new JButton("还书");
   JButton record = new JButton("记录");// 下面有该书借书记录，本人借书记录，全部借书记录，按级别不同进行分配权限
   JButton delete = new JButton("删除图书");
@@ -50,15 +47,14 @@ public class MainGui extends JFrame {
   JPanel menu = new JPanel();
 
   JTextArea jtext = new JTextArea(" 帮助信息", 30, 11);
-  BookStack stack = new BookStack(10);// 初始化书架大小，后期设计应该归管理员操作
+  BookStack stack = new BookStack(10);// 初始化书架大小该版本无用
 
   /**
-   * 主操作界面
-   * 通过增加重写的buttonlisteneraction和mouselistener行为进行操作处理 
+   * 主操作界面 通过增加重写的buttonlisteneraction和mouselistener行为进行操作处理
+   * 
    * @throws ClassNotFoundException
    */
-  public MainGui() throws ClassNotFoundException {
-    Class.forName("com.mysql.jdbc.Driver");
+  public MainGui() {
     setTitle("欢迎使用图书管理系统");
     ButtonListener l = new ButtonListener();
     viewBook.addActionListener(l);
@@ -185,14 +181,13 @@ public class MainGui extends JFrame {
 
     JLabel label = new JLabel("<html>提<br>示<br>信<br>息");
     label.setFont(font);
-    JLabel label0 = new JLabel("<html><br><br>欢<br>迎<br>您<br>使<br>用<br>图<br>书<br>借<br>阅<br>系<br>统");//添加html标签实现竖着排列
+    JLabel label0 = new JLabel("<html><br><br>欢<br>迎<br>您<br>使<br>用<br>图<br>书<br>借<br>阅<br>系<br>统");// 添加html标签实现竖着排列
     label0.setForeground(Color.GRAY);
     label.setForeground(Color.CYAN);
     label0.setFont(font0);
 
     JPanel aa = new JPanel();
     JPanel bb = new JPanel();
-
     aa.add(label0);
     bb.add(label);
     jtext.setFont(font);
@@ -200,66 +195,54 @@ public class MainGui extends JFrame {
     jtext.setLineWrap(true);
     jtext.setSize(80, 100);
     bb.add(jtext);
-    // aa.setBackground(bg);
     JPanel temp = new JPanel();
     temp.setLayout(new GridLayout(1, 2));
     temp.add(menu);
     temp.add(aa);
     temp.add(bb);
-    // aa.setBackground(bg);
-    // bb.setBackground(bg);
     setResizable(false);
     add(temp);
     setSize(800, 600);
     setLocationRelativeTo(null);
   }
 
-
+  /**
+   * 按钮的事件监听
+   */
   private class ButtonListener implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
-      Object[][] obj = null;// 定义书架列表
       if (e.getSource() == viewBook) {// 浏览图书
+        int size = 0;
+        String sql1="select count(*) from book";
+        String sql2 = "select * from book";
+        size = tool.getRowOfStatement(sql1);// 查询图书数量建立图书数组
+        Object[][] book = new Object[size][5];
         try {
-          Connection connection =
-              DriverManager.getConnection("jdbc:mysql://localhost/book_mgr?characterEncoding=utf8",
-                  "root", "121126");
-          // jdbc:mysql://地址:3306/数据库名?characterEncoding=utf8
-          Statement statement = connection.createStatement();
-          ResultSet count = statement.executeQuery("select count(*) from book");
-          int size = 0;
-          while (count.next()) {
-            size = count.getInt(1);
-            // System.out.println(size);
-          }
-          Object[][] temp = new Object[size][5];
           int j = 0;
-          ResultSet getpass = statement.executeQuery("select * from book");
-          while (getpass.next()) {
-            temp[j][0] = getpass.getString(2);
-            temp[j][1] = getpass.getString(3);
-            temp[j][4] = getpass.getString(6);
-            if (getpass.getInt(4) == 0) {
-              temp[j][2] = "在馆";
+          ResultSet getbook = tool.getQueryStatement(sql2);
+          while (getbook.next()) {
+            book[j][0] = getbook.getString(2);
+            book[j][1] = getbook.getString(3);
+            book[j][4] = getbook.getString(6);
+            if (getbook.getInt(4) == 0) {
+              book[j][2] = "在馆";
             } else {
-              temp[j][2] = "借出";
+              book[j][2] = "借出";
             }
-            if (getpass.getInt(5) == 0) {
-              temp[j][3] = "普通";
+            if (getbook.getInt(5) == 0) {
+              book[j][3] = "普通";
             } else {
-              temp[j][3] = "珍藏";
+              book[j][3] = "珍藏";
             }
             j++;
           }
-          obj = temp;
-          connection.close();
-          // System.out.println("连接关闭！");
+          tool.closeConnection();
         } catch (SQLException e1) {
           JOptionPane.showMessageDialog(null, "数据库错误！", "提示", 2);
-          // e1.printStackTrace();
         }
         TableOfMgr table = new TableOfMgr();
-        table.viewTable(obj);
+        table.viewTable(book);
       } else if (e.getSource() == addBook) {// 添加图书
         String name = JOptionPane.showInputDialog(null, "请输入图书名:", "提示", 3);
         try {
@@ -268,112 +251,61 @@ public class MainGui extends JFrame {
           } else {
             JOptionPane.showMessageDialog(null, "图书名字不能为空！", "提示", 2);
           }
-        } catch (ClassNotFoundException e1) {
-          JOptionPane.showMessageDialog(null, "数据库错误！", "提示", 1);
-          // e1.printStackTrace();
-        } catch (Exception e1) {
-          // JOptionPane.showMessageDialog(null, "", "提示", 1);
-          // e1.printStackTrace();
-        }
+        } catch (NullPointerException e1) {}
       } else if (e.getSource() == checkOut) {// 借出
-
+        String name = JOptionPane.showInputDialog(null, "输入借阅的图书名,支持模糊搜索", "提示", 3);
         try {
-          String name = JOptionPane.showInputDialog(null, "输入借阅的图书名,支持模糊搜索", "提示", 3);
-
           if (!name.equals("") && !name.equals(null)) {
-            int s = 0;
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection connection =
-                DriverManager.getConnection(
-                    "jdbc:mysql://localhost/book_mgr?characterEncoding=utf8", "root", "121126");
-            // System.out.println("连接成功！");
-            Statement statement1 = connection.createStatement();
-            ResultSet getpass;
-            getpass =
-                statement1.executeQuery("select count(*) from book where name like '%" + name
-                    + "%' and status=0");
-            while (getpass.next()) {
-              s = getpass.getInt(1);
-            }
-            if (s == 0) {
+            int bookStatus = 0;
+            String sql = "select count(*) from book where name like '%" + name + "%' and status=0";
+            bookStatus = tool.getRowOfStatement(sql);
+            if (bookStatus == 0) {
               JOptionPane.showMessageDialog(null, "该图书不存在，请检查拼写是否错误！", "提示", 1);
             } else {
-              String[][] temp = null;
-              temp = stack.checkOut(name);
+              String[][] temp = stack.checkOut(name);// 定义temp接收checkout的返回值
               ChoiceDialogue a = new ChoiceDialogue();
               a.viewTable(temp);
             }
-            connection.close();
-            // System.out.println("连接关闭！");
           } else {
             JOptionPane.showMessageDialog(null, "请输入图书名字！", "提示", 1);
           }
-        } catch (Exception e1) {
-          // JOptionPane.showMessageDialog(null, "系统出错了！", "提示", 2);
-        }
+        } catch (NullPointerException e1) {}// 抓取空指针异常,用户取消操作
       } else if (e.getSource() == checkIn) {// 归还图书
-        try {
-          new CheckInRenew();
-        } catch (ClassNotFoundException e1) {
-          JOptionPane.showMessageDialog(null, "数据库错误！", "提示", 2);
-          // e1.printStackTrace();
-        }
+        new CheckInRenew();
       } else if (e.getSource() == record) {// 查看记录
         setVisible(false);
-        Record a;
-        try {
-          a = new Record();
-          a.setVisible(true);
-          if (!Login.username.equals("admin")) {
-            a.a.setEnabled(false);
-          }
-        } catch (ClassNotFoundException e1) {
-          JOptionPane.showMessageDialog(null, "数据库错误！", "提示", 2);
-          // e1.printStackTrace();
+        Record record;
+        record = new Record();
+        record.setVisible(true);
+        if (!Login.username.equals("admin")) {
+          record.oneBookRecord.setEnabled(false);
         }
       } else if (e.getSource() == delete) {// 删除图书
-        DeleteBook test;
-        try {
-          test = new DeleteBook();
-          test.viewTable();
-        } catch (ClassNotFoundException e1) {
-          JOptionPane.showMessageDialog(null, "数据库错误！", "提示", 2);
-          // e1.printStackTrace();
-        } catch (SQLException e1) {
-          JOptionPane.showMessageDialog(null, "数据库错误！", "提示", 2);
-        }
-
-      } else if (e.getSource() == changepass) {
+        DeleteBook temp = new DeleteBook();
+        temp.viewTable();
+      } else if (e.getSource() == changepass) {//该密码
         String str = "";
         str = JOptionPane.showInputDialog("请输入旧密码：");
-        String passtemp = "";
+        String oldPassword = "";
         try {
-          Connection connection =
-              DriverManager.getConnection("jdbc:mysql://localhost/book_mgr", "root", "121126");
-          // System.out.println("连接成功！");
-          Statement statement = connection.createStatement();
-          ResultSet getpass;
-          getpass =
-              statement.executeQuery("select pass from user where id='" + Login.username + "'");
-          while (getpass.next()) {
-            passtemp = getpass.getString(1);
+          ResultSet getPassword =
+              tool.getQueryStatement("select pass from user where id='" + Login.username + "'");
+          while (getPassword.next()) {
+            oldPassword = getPassword.getString(1);
           }
 
-          if (!passtemp.equals("")) {
-            if (str.equals(passtemp)) {
-              String str2 = null;
-              String str1 = JOptionPane.showInputDialog("请输入新密码：");
-              if (str1 != null) {
-                str2 = JOptionPane.showInputDialog("请再次输入新密码：");
+          if (!oldPassword.equals("")) {// 用户会进行取消操作
+            if (str.equals(oldPassword)) {
+              String newPasswordAgain = null;
+              String newPassword = JOptionPane.showInputDialog("请输入新密码：");
+              if (newPassword != null) {
+                newPasswordAgain = JOptionPane.showInputDialog("请再次输入新密码：");
               } else {
                 JOptionPane.showMessageDialog(null, "请输入密码！", "错误", 1);
               }
-              if (str1.equals(str2)) {
-                Statement statement1 = connection.createStatement();
-                statement1.execute("update user set pass= '" + str1 + "' where id='"
-                    + Login.username + "'");// 更新数据库里的该用户的密码
-                connection.close();
-                JOptionPane.showMessageDialog(null, "修改成功！", "提示", 1);
+              if (newPassword.equals(newPasswordAgain)) {
+                tool.updateSql("update user set pass= '" + newPassword + "' where id='"
+                    + Login.username + "'");
               } else {
                 JOptionPane.showMessageDialog(null, "两次密码不相同！", "错误", 1);
               }
@@ -387,7 +319,6 @@ public class MainGui extends JFrame {
       } else if (e.getSource() == exit) {
         System.exit(0);
       } else if (e.getSource() == managebook) {// 设置图书罚金，租金，图书类别
-        dispose();
         new BookStyleManage();
       }
     }
