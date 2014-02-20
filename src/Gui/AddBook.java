@@ -1,22 +1,12 @@
 package Gui;
 
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -41,10 +31,10 @@ public class AddBook extends JFrame {
   JButton select = new JButton("添加");
   JButton back = new JButton("返回");
   String gethead = new String();
-  private String name;//图书名字
-  private String hd = "";//图书类型代号
-  private String quhao = "";//图书应该在图书管的位置区号
-  String[] head = null;//现有图书类型数组
+  private String name;// 图书名字
+  private String hd = "";// 图书类型代号
+  private String quhao = "";// 图书应该在图书管的位置区号
+  String[] head = null;// 现有图书类型数组
   String[] headlist = null;
   Font font = new Font("Serif", Font.BOLD, 25);
   Font font2 = new Font("Serif", Font.BOLD, 15);
@@ -75,7 +65,6 @@ public class AddBook extends JFrame {
     final JList<String> list = new JList<String>(headlist);
     group.add(normal);
     group.add(vip);
-
     JPanel jpanel = new JPanel();
     JPanel jpanel1 = new JPanel();
 
@@ -86,18 +75,11 @@ public class AddBook extends JFrame {
       public void valueChanged(ListSelectionEvent e) {
         hd = head[list.getSelectedIndex()];//
         String sql = "select number from bookhead where head = '" + hd + "'";
-        try {
-          ResultSet getquhao = tool.getQueryStatement(sql);
-          while (getquhao.next()) {
-            if (getquhao.getString(1).length() == 1)
-              quhao = "0" + getquhao.getString(1);// 为了美观对于区号为个位的前端补一个零
-            else
-              quhao = getquhao.getString(1);
-          }
-          tool.closeConnection();
-        } catch (SQLException e1) {
-          System.out.println("sql wrong!");
-        }
+        int num = (Integer) tool.queryOne(sql);
+        if (num <10)
+          quhao = "0" + num;
+        else
+          quhao = ""+num;
       }
     });
     ButtonListener l = new ButtonListener();
@@ -147,9 +129,11 @@ public class AddBook extends JFrame {
         if (!hd.equals("")) {
           if (normal.isSelected()) {
             new Book(name, hd, quhao, 0);// 针对不同藏书级别设置的图书类别0代表普通,1代表珍藏
+            JOptionPane.showMessageDialog(null, "操作成功！", "提示", 1);
             setVisible(false);
           } else {
             new Book(name, hd, quhao, 1);
+            JOptionPane.showMessageDialog(null, "操作成功！", "提示", 1);
             setVisible(false);
           }
         } else {

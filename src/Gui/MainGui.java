@@ -9,11 +9,12 @@ import java.awt.event.MouseAdapter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+
+import base.BaseJFrame;
 
 import tool.SqlTool;
 
@@ -25,7 +26,7 @@ import model.BookStack;
  * @author mtcle
  * @version 1.0
  */
-public class MainGui extends JFrame {
+public class MainGui extends BaseJFrame {
   private static final long serialVersionUID = 1745017706827567279L;
   Color bg = new Color(224, 255, 255);
   Font font = new Font("Serif", Font.ITALIC, 20);
@@ -55,6 +56,7 @@ public class MainGui extends JFrame {
    * @throws ClassNotFoundException
    */
   public MainGui() {
+    super();
     setTitle("欢迎使用图书管理系统");
     ButtonListener l = new ButtonListener();
     viewBook.addActionListener(l);
@@ -200,10 +202,17 @@ public class MainGui extends JFrame {
     temp.add(menu);
     temp.add(aa);
     temp.add(bb);
-    setResizable(false);
     add(temp);
+   
+    
+    int left = getIntPrefs("left");
+    int top = getIntPrefs("top");
+    int width = getIntPrefs("width");
+    int height = getIntPrefs("height");
+    setBounds(left, top, width, height);
     setSize(800, 600);
-    setLocationRelativeTo(null);
+    addWindowListener(this);
+
   }
 
   /**
@@ -287,13 +296,8 @@ public class MainGui extends JFrame {
         String str = "";
         str = JOptionPane.showInputDialog("请输入旧密码：");
         String oldPassword = "";
-        try {
-          ResultSet getPassword =
-              tool.getQueryStatement("select pass from user where id='" + Login.username + "'");
-          while (getPassword.next()) {
-            oldPassword = getPassword.getString(1);
-          }
-
+        try {                 
+            oldPassword = (String)tool.queryOne("select pass from user where id='" + Login.username + "'");          
           if (!oldPassword.equals("")) {// 用户会进行取消操作
             if (str.equals(oldPassword)) {
               String newPasswordAgain = null;

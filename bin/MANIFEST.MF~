@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: mtcle
+Class-Path: mysql-connector-java-5.1.28-bin.jar test1.jar
+Main-Class: Gui.Main

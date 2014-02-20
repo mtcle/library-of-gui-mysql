@@ -1,22 +1,11 @@
 package Gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
+import javax.swing.*;
+
+import base.BaseJFrame;
 
 import tool.SqlTool;
 
@@ -26,7 +15,7 @@ import tool.SqlTool;
  * @author mtcle
  * @version 1.0
  */
-public class Login extends JFrame {
+public class Login extends BaseJFrame {
   SqlTool tool = new SqlTool();
   Color bg = new Color(224, 255, 255);
   private static final long serialVersionUID = -5032612745381818733L;
@@ -47,6 +36,7 @@ public class Login extends JFrame {
    * @author mtcle
    */
   public Login() {
+    super();
     login.addActionListener(new ButtonListener());// 监听绑定
     jpassword.addActionListener(new ButtonListener());
     JLabel welcome = new JLabel("请登录");
@@ -78,7 +68,6 @@ public class Login extends JFrame {
     jpanel2.add(password);
     jpanel2.add(jpassword);
     jpanel2.setBackground(bg);
-    // jpanel.setLayout(new GridLayout(3,1));
     jpanel.add(welcome);
     jpanel.add(jpanel2);
     jpanel.add(jpanel1);
@@ -86,10 +75,13 @@ public class Login extends JFrame {
     jpanel.setBackground(bg);
     add(jpanel, BorderLayout.CENTER);
     setTitle("登录界面");
-    setSize(240, 180);
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    setLocationRelativeTo(null);
-    setResizable(false);
+    int left = getIntPrefs("left");
+    int top = getIntPrefs("top");
+    int width = getIntPrefs("width");
+    int height = getIntPrefs("height");
+    setBounds(left, top, width, height);
+//    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    addWindowListener(this);
   }
 
   /**
@@ -102,24 +94,14 @@ public class Login extends JFrame {
     public void actionPerformed(ActionEvent e) {
       if ((e.getSource() == login || e.getSource() == jpassword) && admin.isSelected()) {// 管理员登陆
         String passtemp = "";
-        try {
-          String sql = "select pass from user where id='admin'";
-          ResultSet result = tool.getQueryStatement(sql);
-          while (result.next()) {
-            passtemp = result.getString(1);
-          }
-          tool.closeConnection();
-        } catch (SQLException e2) {
-          System.out.println(e2);
-        }
-
+        String sql = "select pass from user where id='admin'";
+        passtemp=(String)tool.queryOne(sql);
         if (jtext.getText().equals("admin")
             && tool.getStringOfPassword(jpassword.getPassword()).equals(passtemp)) {// 调用了工具类的密码转换方法
           setVisible(false);
           // dispose();
           MainGui frame;
           frame = new MainGui();
-          frame.setLocationRelativeTo(null);
           frame.setVisible(true);
           username = jtext.getText();
         } else {
@@ -130,7 +112,7 @@ public class Login extends JFrame {
         JOptionPane.showMessageDialog(null, "您以游客身份登陆，权限不足", "提示", 1);
         MainGui frame = null;
         frame = new MainGui();
-        frame.setLocationRelativeTo(null);
+//        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.adduser.setEnabled(false);// 本阶段是为了测试方便
         frame.addBook.setEnabled(false);
@@ -145,22 +127,13 @@ public class Login extends JFrame {
         String name = jtext.getText();
         String pass = tool.getStringOfPassword(jpassword.getPassword());
         String sql = "select pass from user where id = '" + name + "'";
-        try {
-          ResultSet result = tool.getQueryStatement(sql);
-          while (result.next()) {
-            vippasstemp = result.getString(1);
-          }
-        } catch (SQLException e1) {
-          JOptionPane.showMessageDialog(null, "sql出错！", "警告", 2);
-        }
-        tool.closeConnection();
+        vippasstemp=(String)tool.queryOne(sql);
         if (pass.equals(vippasstemp)) {
           setVisible(false);
           JOptionPane.showMessageDialog(null, "您是尊贵的vip！", "提示", 1);
           username = jtext.getText();
           MainGui frame;
           frame = new MainGui();
-          frame.setLocationRelativeTo(null);
           frame.setVisible(true);
           frame.adduser.setEnabled(false);
           frame.addBook.setEnabled(false);

@@ -8,7 +8,6 @@ package Gui;
 public class Main {
   public static void main(String[] args){
     Login frame = new Login();
-    frame.setLocationRelativeTo(null);
     frame.setVisible(true);
   }
 }
